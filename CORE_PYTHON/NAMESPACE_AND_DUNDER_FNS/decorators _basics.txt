@@ -1,0 +1,10 @@
+def quad_power( func , num ) :
+     return func(num)**2
+
+
+def sq(num ):
+    reuturn num **2 
+
+
+quadpower(sq , 2)
+

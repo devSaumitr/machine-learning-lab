@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# IDE / Editor
+.vscode/
+*.code-workspace
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large media files
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Binary / data files
+*.pkl
+*.tkl
+*.jpeg
+*.png
+*.jpg
+
+# Temp files
+tempCodeRunnerFile.py

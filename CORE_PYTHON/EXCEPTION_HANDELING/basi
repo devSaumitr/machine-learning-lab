@@ -1,0 +1,22 @@
+why it is even important to handlethe error 
+// to imorove the user experience 
+// do not bring to too much information on the surfave level 
+
+// whenever you u are handeling it  the outside elements 
+ // keep it in the try block
+
+ try except and else block 
+ else is exceptional 
+
+
+ else runs only when no except is raised
+
+ try and finally always runs 
+
+
+Raise is similar to the  throw in java 
+
+raise throughs the error and except catches it
+
+
+
