@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "name": "Amit",
+        "age": 22,
+        "city": "Noida",
+        "skills": [
+            "Python",
+            "SQL"
+        ],
+        "address": {
+            "state": "UP",
+            "pincode": 201301
+        }
+    },
+    {
+        "id": 2,
+        "name": "Rahul",
+        "age": 23,
+        "city": "Delhi",
+        "skills": [
+            "Python",
+            "ML"
+        ],
+        "address": {
+            "state": "Delhi",
+            "pincode": 110001
+        }
+    },
+    {
+        "id": 3,
+        "name": "Priya",
+        "age": 21,
+        "city": "Lucknow",
+        "skills": [
+            "SQL",
+            "Tableau"
+        ],
+        "address": {
+            "state": "UP",
+            "pincode": 226001
+        }
+    }
+]
