@@ -1,0 +1,7 @@
+# Virtual environments (recreate with requirements instead of committing)
+.venv/
+.venv312/
+
+# Python caches
+__pycache__/
+*.pyc
