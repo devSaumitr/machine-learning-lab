@@ -25,7 +25,7 @@
 | v2.0 | 2026-08-21 | Added Rule Set 2 — "Beginner → FANG Level Personal Mentorship" (user-provided master prompt). Merged as-is; Rule Set 1 unchanged. Both rule sets apply together: RS1 = output format of notes/explanations, RS2 = teaching process, depth ladder, and interaction rules. |
 | v3.0 | 2026-08-21 | Added Rule Set 3 — "Simple Words + Visual First" (user request): plain short sentences, analogy-first, emoji anchors, diagram in every section, say→show→walkthrough, one idea per block. Applies on top of RS1+RS2. Topics 01–07 rewritten to this standard. |
 | v3.1 | 2026-08-21 | Added Rule Set 4 — "Emoji Moderation" (user feedback: files too emoji-clumsy). Body text keeps only ⚠️✅❌⭐; one anchor emoji allowed per heading; diagrams emoji-free. Supersedes 3.3's density. File-handling note moved to `topics/file handling/`. All topic MDs cleaned to this standard. |
-| v4.0 | 2026-11-02 | Added Rule Set 5 — "ML Concept-from-Zero" (user-loved Box-Cox ChatGPT walkthrough as reference). Plain ladder: why → what → knob table → auto-choice → conditions → sklearn → vs known tool → check → workflow/CV. No bragging. Applies to ML topic explanation sections (Day 30+). |
+| v4.0 | 2026-11-02 | Added Rule Set 5 �?" "ML Concept-from-Zero" (user-loved Box-Cox ChatGPT walkthrough as reference). Plain ladder: why �+' what �+' knob table �+' auto-choice �+' conditions �+' sklearn �+' vs known tool �+' check �+' workflow/CV. No bragging. Applies to ML topic explanation sections (Day 30+). |
 
 ---
 

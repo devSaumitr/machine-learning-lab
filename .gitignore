@@ -4,4 +4,28 @@
 
 # Python caches
 __pycache__/
+*.py[cod]
+*$py.class
 *.pyc
+.ipynb_checkpoints/
+
+# IDE / Editor
+.vscode/
+*.code-workspace
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large media files
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Temp files
+tempCodeRunnerFile.py
