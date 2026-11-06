@@ -1,77 +1,70 @@
-# Day_27
+# Day 27 — One-Hot Encoding
 
 CampusX 100 Days of ML · folder `Day_27/`
 
----
-
-## Day number
-
-**27**
-
----
-
 ## Main topics
 
-See `notes.md` and learner notebook headings (primary: `DAY27_OneHot-Encoding.ipynb`).
-
----
+One-hot encoding for nominal features, the dummy-variable trap, pandas `get_dummies`, scikit-learn `OneHotEncoder`, and rare-category grouping.
 
 ## Learning objectives
 
-1. Follow the CampusX practical implementation in `my_notebook.ipynb`.
-2. Explain what each important technique does and why it is used.
-3. Interpret outputs and common mistakes (see `notes.md`).
-4. Connect the day to the ML workflow (fit on train only; pipelines).
+1. Explain why unordered categories must not be integer-encoded.
+2. Build one-hot columns with pandas and scikit-learn.
+3. Apply $k-1$ encoding to avoid the dummy trap.
+4. Fit on training data and transform test data.
+5. Group rare categories in high-cardinality features.
+6. Identify the preserved notebook bugs and explain their fixes.
 
----
+## Notebooks
 
-## Reference notebooks
+| File | Role | Cells |
+|------|------|-------|
+| `my_notebook.ipynb` | Primary practical notebook: pandas dummies, sklearn encoder, rare-brand grouping | 30 |
 
-| File | Role |
-|------|------|
-| `reference_notebooks/reference_notebook.ipynb` | CampusX original — **do not edit** (if present) |
-| `my_notebook.ipynb` | Personal practical notebook (copy of `DAY27_OneHot-Encoding.ipynb`) |
-| `DAY27_OneHot-Encoding.ipynb` | Original learner notebook name (kept) |
-| `DAY27_OneHot-Encoding_simplified.ipynb` | Optional simplified copy |
-
----
+Reference original: `reference_notebooks/day27.ipynb` — **do not edit**.
 
 ## Dataset
 
 | File | Source |
 |------|--------|
-| `datasets/cars.csv` | Copied from course materials / original day data |
+| `datasets/cars.csv` | CampusX course dataset |
 
-- Prefer relative paths under `datasets/`.
-- Never invent replacements if a dataset is missing.
+The notebook currently uses an absolute Windows path. For portability:
 
----
+```python
+import pandas as pd
+cars = pd.read_csv("datasets/cars.csv")
+```
 
 ## Dependencies
 
 ```text
-python ≥ 3.9
-pandas, numpy, scikit-learn
-matplotlib / seaborn (as used in notebook)
-jupyter
+python >= 3.9
+pandas, numpy, scikit-learn, jupyter
 ```
 
 ```bash
-pip install pandas numpy scikit-learn matplotlib seaborn jupyter
+pip install pandas numpy scikit-learn jupyter
 ```
-
----
 
 ## How to run
 
-1. Open `Day_27/` as working directory.
-2. Open `my_notebook.ipynb` beside `reference_notebooks/reference_notebook.ipynb` (if present).
-3. Read `notes.md` for theory.
-4. Run code cells in order; use `datasets/` for local files.
+1. Open `Day_27/` as the working directory.
+2. Run `my_notebook.ipynb` in order.
+3. Read `notes.md` for the full theory, saved-output interpretation, and interview material.
 
----
+## Notes on the notebook
 
-## Daily folder structure
+- Saved outputs are from the user's environment, not regenerated here.
+- The dataset has 8,128 rows and five columns.
+- Full pandas dummies produce 12 columns; `drop_first=True` produces 10.
+- The sklearn encoder block produces `(5689, 7)` after dropping one level per feature.
+- The `hstack` result is `(5689, 9)`, but `brand` is still a string and the array is not model-ready.
+- **Preserved bug:** `y = df.iloc[:, :-1]` overlaps `X` and is not `selling_price`. No model is trained; fix the target before adding one.
+- **Preserved typo:** the rare-brand bucket is `"unommon"` instead of `"uncommon"`.
+- No model, accuracy, or cross-validation result is present.
+
+## Folder structure
 
 ```text
 Day_27/
@@ -79,25 +72,11 @@ Day_27/
 ├── notes.md
 ├── README.md
 ├── reference_notebooks/
-│   └── reference_notebook.ipynb
-├── datasets/
-│   └── ...
-└── (other learner notebooks / simplified kept)
+│   └── day27.ipynb
+└── datasets/
+    └── cars.csv
 ```
-
-Primary learner notebook: `DAY27_OneHot-Encoding.ipynb` · other learners: DAY27_OneHot-Encoding.ipynb
-
----
-
-## Study order
-
-1. `notes.md`
-2. `my_notebook.ipynb` (run)
-3. Compare `reference_notebooks/reference_notebook.ipynb`
-4. Revise cheat sheet / interview section in notes
-
----
 
 ## Status
 
-Migrated to required structure (pilot process). Legacy extras kept until cleanup approved.
+`notes.md` rewritten to the Day 39 two-layer standard and validated for structure and math. Notebook implementation preserved.

@@ -1,65 +1,57 @@
-# Day_30
+# Day 30 — FunctionTransformer and the Log Transform
 
 CampusX 100 Days of ML · folder `Day_30/`
 
-## Day number
-
-**30**
-
 ## Main topics
 
-`FunctionTransformer`; log transform; reciprocal and square-root transforms.
+- `FunctionTransformer` as a wrapper for ordinary functions.
+- `log1p` for right-skewed, non-negative features.
+- Histogram, Q-Q plot, and skewness checks.
+- Selective routing with `ColumnTransformer`.
+- Holdout versus cross-validation; preserved notebook bugs.
 
 ## Learning objectives
 
-1. Explain what a `FunctionTransformer` wraps and when it executes.
-2. Apply `np.log1p` to a right-skewed feature and compare distributions.
-3. Choose a transform for the shape of the data, not by habit.
-4. Place the transformer inside a `ColumnTransformer` / pipeline correctly.
+1. Explain what `FunctionTransformer` stores and when it executes.
+2. Apply `log1p` and compare distributions before and after.
+3. Route the transform to `Fare` only and track output column order.
+4. Diagnose test-side refitting, pre-CV transformation, and duplicate-classifier bugs.
+5. Explain why `np.sin` is a bad transform for `Fare`.
 
 ## Notebooks
 
-| File | Role | Cells |
-|------|------|-------|
-| `my_notebook.ipynb` | Primary practical notebook (log transform, documented) | 77 |
-| `DAY30_Function-Transformer-preview-OUT-OF-SCOPE.ipynb` | Original preview notebook (kept distinct; spans Day 30–31) | 29 |
-| `reference_notebooks/reference_notebook.ipynb` | CampusX original — **do not edit** | — |
+| File | Role | Stored outputs |
+|------|------|----------------|
+| `my_notebook.ipynb` | Documented walkthrough (77 cells) | None |
+| `DAY30_Function-Transformer-preview-OUT-OF-SCOPE.ipynb` | Executed preview (29 cells); source of saved scores | Yes |
+| `reference_notebooks/day30.ipynb` | CampusX original — **do not edit** | — |
+
+`my_notebook.ipynb` cell 70 is malformed and does not define `apply_transform`; the working helper is in the preview notebook.
 
 ## Dataset
 
 | File | Source |
 |------|--------|
-| `datasets/train.csv` | CampusX course dataset (Titanic) |
+| `datasets/train.csv` | CampusX Titanic dataset |
 
 ## Dependencies
 
 ```text
 python >= 3.9
-pandas, numpy, scikit-learn, matplotlib, seaborn, jupyter
+pandas, numpy, scipy, scikit-learn, matplotlib, seaborn, jupyter
 ```
 
 ```bash
-pip install pandas numpy scikit-learn matplotlib seaborn jupyter
+pip install pandas numpy scipy scikit-learn matplotlib seaborn jupyter
 ```
 
 ## How to run
 
 1. Open `Day_30/` as the working directory.
-2. Run `my_notebook.ipynb`, then the preview notebook for the Day 31 preview.
-3. Read `notes.md` for the unified theory and interview material.
+2. Run `my_notebook.ipynb` for the guided walkthrough.
+3. Use the preview notebook for the executed outputs and the `apply_transform` helper.
+4. Read `notes.md` for theory, math, preserved bugs, and interview material.
 
-## Daily folder structure
+## Notes
 
-```text
-Day_30/
-├── my_notebook.ipynb
-├── DAY30_Function-Transformer-preview-OUT-OF-SCOPE.ipynb
-├── notes.md
-├── README.md
-├── reference_notebooks/
-└── datasets/
-```
-
-## Status
-
-Preview notebook recovered from git and kept separate. `notes.md` covers both notebooks.
+The notebook uses `trf.fit_transform(X_test)` and transforms all data before CV. Both are preserved bugs; they are harmless here only because `log1p` is stateless. The notes explain the correct train/test and pipeline patterns.

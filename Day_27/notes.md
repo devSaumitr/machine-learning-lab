@@ -1,315 +1,1044 @@
-# Day_27 — One-Hot Encoding — Topics Guide (Day 27)
+# Day 27 — One-Hot Encoding
 
-> Deep notes for **Day_27**. Structure follows AGENTS.md Part 9. Body content is preserved from day materials (`topics.md`, `topic_notes.md`, prior `notes.md`) — not a hollow outline.
-
-> Companion: `my_notebook.ipynb` · reference: `reference_notebooks/` · data: `datasets/`
+> **Course topic:** CampusX Day 27, *One Hot Encoding — Handling Categorical Data*.
+> **Personal notebook:** `my_notebook.ipynb` (30 cells).
+> **Dataset:** `datasets/cars.csv` (8,128 rows).
+> **Reference:** `reference_notebooks/day27.ipynb` (do not edit).
+>
+> **Part A** is the main learning chapter and is sufficient on its own. **Part B** preserves advanced details, edge cases, and reference material.
 
 ---
 
-## Source material (preserved)
+## Part A — Main Learning Chapter
 
-### From `topics.md` (course-aligned quick guide)
+### A1. Learning objectives
 
-# One-Hot Encoding — Topics Guide (Day 27)
+By the end of this chapter you should be able to:
 
-> Primary: `DAY27_OneHot-Encoding.ipynb` (this folder). Secondary: CampusX [day27-one-hot-encoding](https://github.com/campusx-official/100-days-of-machine-learning/tree/main/day27-one-hot-encoding) (`day27.ipynb`, video `U5oCv3JKWKA`) — same four blocks (pandas dummies → k−1 → sklearn `OneHotEncoder` → top categories); your local notebook adds explicit dummy-trap markdown and keeps documented bugs for you to fix.
+1. Explain why unordered categorical variables must not be integer-encoded as if they had a rank.
+2. Build one-hot columns with `pd.get_dummies` and `OneHotEncoder`.
+3. Explain the dummy-variable trap and why $k-1$ columns are often used.
+4. Fit an encoder on training data and transform test data without leakage.
+5. Handle high-cardinality features by grouping rare categories.
+6. Read output shapes and verify that every concatenation step is correct.
+7. Identify the preserved bugs in the Day 27 notebook and explain the fixes.
 
-## 1. What
+---
 
-One-hot encoding gives **every level its own 0/1 column**, used when categories have **no order** (fuel: CNG/Diesel/LPG/Petrol; owner: First/Second/…; brand: Maruti/Honda/…). A row with `fuel=Diesel` is `fuel_Diesel=1`, all other fuel columns `0`.
+### A2. The problem: a number can invent an order
 
-Two tools, same idea:
+Suppose a car dataset has a `fuel` column:
 
-- **`pd.get_dummies(df, columns=[...])`** — one-shot pandas, great for EDA.
-- **`OneHotEncoder`** (sklearn) — fits on train, remembers categories, transforms test safely inside pipelines.
-
-Plus the **dummy trap** rule: for n levels keep **n−1** columns (`drop_first=True` / `drop='first'`), and the **high-cardinality fix**: rare levels (brand count ≤ 100) collapse into one bucket before encoding.
-
-Data: `cars.csv` — `brand/km_driven/fuel/owner/selling_price`, 8128 rows (train 5689 at `test_size=0.3, rs=34`).
-
-## 2. Why
-
-- Unordered categories must not be squeezed into one integer: ordinal codes would invent a rank (CNG < Diesel < Petrol) that does not exist — the model would learn nonsense. Day 26's lesson: only encode order when order is real.
-- **Dummy trap / multicollinearity:** with all n columns present, `fuel_CNG + fuel_Diesel + fuel_LPG + fuel_Petrol = 1` always — one column is a perfect linear combination of the others. Input columns must not predict each other (multicollinearity must be zero). n−1 columns still fully describe n levels: the dropped level is the all-zero baseline.
-- **High cardinality:** 32 brands → 32 extra columns, most of them almost never 1 (Isuzu=5 rows). Grouping rare brands into `other` keeps the matrix narrow without dropping the signal column.
-- **Pipeline safety:** `get_dummies` on test alone can produce different columns than train (or error on unseen levels). `OneHotEncoder` fit on train always emits the same columns; `handle_unknown="ignore"` maps unseen test levels to all-zeros.
-
-## 3. How
-
-1. Load `cars.csv`; inspect `df['owner'].value_counts()` (First 5289 … Test Drive 5).
-2. **Pandas path:** `pd.get_dummies(df, columns=['fuel','owner'])` → full n columns; then `drop_first=True` → n−1 (dummy trap fixed).
-3. **Sklearn path:** split 70/30 (`rs=34`); `OneHotEncoder(drop='first', sparse_output=False, dtype=np.int32)`; `fit_transform(X_train[['fuel','owner']])` → `(5689, 7)`; `transform(X_test[...])`; `np.hstack` with `brand`/`km_driven` → `(5689, 9)`.
-4. **Top categories:** `counts = df['brand'].value_counts()`; `threshold = 100`; `repl = counts[counts <= threshold].index`; `df['brand'].replace(repl, 'uncommon')` → `pd.get_dummies(...)` → 12 frequent brands + 1 bucket.
-
-## 4. Syntax breakdown
-
-### `pd.get_dummies`
-
-```python
-pd.get_dummies(
-    df,
-    columns=["fuel", "owner"],   # which columns to expand; others pass through
-    drop_first=False,            # True → keep n-1 columns (dummy trap fix)
-    dtype=np.int8                # output type (bool by default in modern pandas)
-)
+```text
+Petrol, Diesel, CNG, LPG
 ```
 
-- Prefix auto-named `fuel_CNG`, `owner_First Owner`, … (use `prefix=` / `sep=` to change).
-- **No fit state** — pure function. Calling it separately on train and test is the classic column-mismatch bug.
+If we map the levels to integers:
 
-### `OneHotEncoder` init args
-
-```python
-from sklearn.preprocessing import OneHotEncoder
-ohe = OneHotEncoder(
-    drop="first",            # None (default, n cols) | "first" | "if_binary" | list per column
-    sparse_output=False,     # False → dense array (sklearn ≥1.2; older name: sparse=False)
-    dtype=np.int32,          # 0/1 ints instead of bool/float
-    handle_unknown="error"   # "error" | "ignore" (unseen → all zeros) | "infrequent_if_exist"
-    # also: min_frequency / max_categories → auto-group rare levels ("infrequent")
-)
+```text
+CNG    -> 0
+Diesel -> 1
+LPG    -> 2
+Petrol -> 3
 ```
 
-- `drop='first'` = k−1 encoding, the sklearn twin of `drop_first=True`.
-- `sparse_output=True` (default) returns a scipy sparse matrix — memory-friendly for huge one-hots; the notebook forces dense for easy `hstack`/display.
-- `handle_unknown='ignore'` is the pipeline-safe setting the notebook's markdown recommends (not set in the code here).
+a linear model sees a single feature whose values increase from CNG to Petrol. It may learn that Petrol is "three units more" than CNG, or that the effect of moving from CNG to Diesel is the same as moving from LPG to Petrol. None of those statements is meaningful. Fuel types have no natural order.
 
-### `categories` (implicit)
+A distance-based model has the same problem. The distance between CNG and Petrol becomes larger than the distance between CNG and Diesel simply because of the arbitrary code assignment.
 
-- You do not pass `categories=` in this notebook; `fit` learns them from train **in sorted order** (alphabetical). `ohe.categories_` / `ohe.drop_idx_` show what was learned and which level was dropped. Declare lists yourself only if the sorted order is wrong for you.
+The same issue applies to:
 
-### `fit_transform` vs `transform`
+- `owner`: First Owner, Second Owner, Third Owner, Fourth & Above Owner, Test Drive Car.
+- `brand`: Maruti, Hyundai, Honda, ...
+- `city`: Delhi, Mumbai, Kolkata, ...
+- `colour`: red, green, blue.
 
-| call | meaning | when |
-|---|---|---|
-| `ohe.fit_transform(X_train[['fuel','owner']])` | learn levels + encode | train only |
-| `ohe.transform(X_test[['fuel','owner']])` | encode with train's levels | test, never fit here |
+These are **nominal** variables: categories differ in kind, not in amount.
 
-`fit_transform` on test = leakage **and** possibly different columns (documented bug in this notebook — see §7).
+One-hot encoding avoids inventing an order by giving each level its own binary column.
 
-### `inverse_transform`
+---
+
+### A3. The one-hot representation
+
+For a feature with levels $\{c_1,\dots,c_k\}$, one-hot encoding creates $k$ binary indicators:
+
+$$
+x_j' = \mathbf{1}[x = c_j],
+\qquad j=1,\dots,k.
+$$
+
+For `fuel` with four levels, a row with `fuel = Diesel` becomes:
+
+| fuel_CNG | fuel_Diesel | fuel_LPG | fuel_Petrol |
+|---:|---:|---:|---:|
+| 0 | 1 | 0 | 0 |
+
+A row with `fuel = Petrol` becomes:
+
+| fuel_CNG | fuel_Diesel | fuel_LPG | fuel_Petrol |
+|---:|---:|---:|---:|
+| 0 | 0 | 0 | 1 |
+
+Exactly one column is 1 for each row. The representation makes no claim about order or distance between fuel types.
+
+#### The cost
+
+One-hot encoding increases the number of columns. A feature with 1,000 levels becomes 1,000 columns (or 999 after dropping one). For high-cardinality features, this can dominate memory and make the design matrix sparse and wide.
+
+---
+
+### A4. The dummy-variable trap
+
+Suppose a model has an intercept and all $k$ one-hot columns for a feature. Then for every row:
+
+$$
+\sum_{j=1}^{k} x_j' = 1.
+$$
+
+The sum of the one-hot columns equals the intercept column. Therefore the columns are linearly dependent: one column is a perfect linear combination of the others. This is **perfect multicollinearity**, often called the **dummy-variable trap**.
+
+For ordinary least squares, the design matrix becomes rank-deficient, so the coefficients are not uniquely identifiable. The model can still make predictions, but the individual coefficients are unstable and their interpretation is ambiguous.
+
+The standard fix is to drop one level, keeping $k-1$ columns. The dropped level becomes the **reference** or **baseline** category. For `fuel` with CNG as the baseline:
+
+| fuel_Diesel | fuel_LPG | fuel_Petrol |
+|---:|---:|---:|
+| 0 | 0 | 0 |
+| 1 | 0 | 0 |
+| 0 | 1 | 0 |
+| 0 | 0 | 1 |
+
+An all-zero row now represents CNG. The coefficient of `fuel_Diesel` is interpreted relative to CNG, holding other features fixed.
+
+#### When $k-1$ is not required
+
+Trees and tree ensembles do not use linear coefficients in the same way. Full one-hot columns are usually harmless for trees, though they can make split search slower. Regularized linear models can handle collinearity numerically, but the coefficients are still not uniquely interpretable. For clean statistical interpretation, $k-1$ is the safer default.
+
+#### `drop='if_binary'`
+
+Scikit-learn also supports `drop='if_binary'`, which drops one column only for binary features and keeps all columns for features with more than two levels. This is useful when you want a single coefficient for a binary indicator but full flexibility for multi-level features.
+
+---
+
+### A5. The dataset and the four notebook blocks
+
+The notebook loads `cars.csv`:
 
 ```python
-ohe.inverse_transform(X_train_new)   # 0/1 rows → original ['Diesel', 'First Owner'] strings
-```
-
-Works on the encoded block; pandas `get_dummies` has no inverse (bools are not reversible without the original frame).
-
-### drop / sparse at a glance
-
-| | pandas `get_dummies` | sklearn `OneHotEncoder` |
-|---|---|---|
-| drop one level | `drop_first=True` | `drop='first'` |
-| sparse output | no (dense DataFrame) | `sparse_output=True` default |
-| remembers categories | no | yes (`categories_`) |
-| unseen test level | column mismatch risk | `handle_unknown='ignore'` |
-
-## 5. Implementation
-
-```python
-import pandas as pd, numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
-
 cars = pd.read_csv(r"E:\MACHINE_LEARNING\DATA_SETS\cars.csv")
 df = cars
-
-# pandas EDA path
-pd.get_dummies(df, columns=['fuel', 'owner'])
-pd.get_dummies(df, columns=['fuel', 'owner'], drop_first=True)   # k-1
-
-# sklearn pipeline path
-X_train, X_test, y_train, y_test = train_test_split(
-    df.iloc[:, 0:4], df.iloc[:, -1],   # FIX (see §7): y must be selling_price only
-    test_size=0.3, random_state=34
-)
-ohe = OneHotEncoder(drop='first', sparse_output=False, dtype=np.int32)
-X_train_new = ohe.fit_transform(X_train[['fuel', 'owner']])   # (5689, 7)
-X_test_new  = ohe.transform(X_test[['fuel', 'owner']])
-np.hstack((X_train[['brand', 'km_driven']].values, X_train_new)).shape  # (5689, 9)
-
-# top categories
-counts = df['brand'].value_counts()
-threshold = 100
-repl = counts[counts <= threshold].index
-pd.get_dummies(df['brand'].replace(repl, 'uncommon')).sample(5)
 ```
 
-## 6. Execution walkthrough
+Saved shape:
 
-1. `cars` → 8128 rows × 5 cols: `brand, km_driven, fuel, owner, selling_price` (row 0: Maruti, 145500, Diesel, First Owner, 450000).
-2. `df['owner'].value_counts()` → First 5289, Second 2105, Third 555, Fourth & Above 174, Test Drive 5 (5 levels → 5 or 4 dummy columns).
-3. `pd.get_dummies(df, columns=['fuel','owner'])` → 8128 × **12** (brand + km + price pass through; fuel 4 + owner 5 = 9 new columns replace 2 old: −2+9 = +7).
-4. `drop_first=True` → 8128 × **10**: `fuel_CNG` dropped (baseline = CNG), `owner_First Owner` dropped (baseline = First Owner); 3 + 4 = 7 dummies.
-5. Split `df.iloc[:,0:4]` vs `df.iloc[:,:-1]`, `test_size=0.3, rs=34` → train 5689 / test 2439. (Bug: `y` is not the target — see §7.)
-6. `ohe = OneHotEncoder(drop='first', sparse_output=False, dtype=np.int32)`.
-7. `X_train_new = ohe.fit_transform(X_train[['fuel','owner']])` → dense int array **(5689, 7)** = fuel 3 + owner 4.
-8. `X_test_new = ohe.transform(X_test[['fuel','owner']])` — same 7 columns, no refit.
-9. `np.hstack((X_train[['brand','km_driven']].values, X_train_new)).shape` → **(5689, 9)** = 2 passthrough + 7 encoded (brand itself is still a string column — not encoded here).
-10. Top-category block: `counts` shows Maruti 2448 … Peugeot 1; `threshold = 100`; `repl = counts[counts <= 100].index` → 15 rare brands (Fiat…Peugeot); `replace(repl, 'unommon')` then `get_dummies(...).sample(5)` → **13 columns** (12 brands with count > 100 + the bucket), booleans True/False.
+```text
+(8128, 5)
+```
 
-## 7. Observations
+Columns:
 
-- **Ordinal vs label vs one-hot (Day 26 recap + Day 27).** Ordinal/label = one number per level (rank must be real, or it is the target). One-hot = one column per level (rank must *not* exist). Putting `OrdinalEncoder` on `fuel` would invent Diesel > Petrol; putting `LabelEncoder` on inputs has the same flaw.
-- **Dummy trap.** Full dummies are collinear: columns sum to 1. Keep n−1 (`drop_first` / `drop='first'`) whenever multicollinearity matters (linear models especially). Trees tolerate full dummies, but k−1 is the safe default CampusX teaches.
-- **Category order.** One-hot does not care about level order — `get_dummies` and `OneHotEncoder` both sort alphabetically, and that is fine here. Only ordinal encoding needs a declared order (Day 26).
-- **Leakage — documented bug in this notebook:** `y_train, y_test = train_test_split(..., df.iloc[:, :-1], ...)` makes `y` **identical to X** (`brand, km_driven, fuel, owner`) instead of `selling_price`. Fix: `df.iloc[:, -1]`. Also, never `fit_transform` the encoder on `X_test` (the notebook correctly uses `transform` here — keep it that way; the takeaways cell still warns about the pattern).
-- **Small bugs preserved on purpose:** typo `'unommon'` (CampusX spells it `'uncommon'`); `OneHotEncoder` imported twice; a code cell with only `nunique()`/`threshold` and an empty cell — clean these before a full re-run.
-- **Width explosion.** fuel+owner is cheap (7 columns); brand would add 31. That is why top-k grouping exists: threshold 100 → 13 columns instead of 32. Move the threshold to 500 and the bucket grows, width shrinks (experiment cell).
-- **pandas vs sklearn.** `get_dummies` forgets everything between calls — fine for one-off EDA, wrong for train/test pipelines. `OneHotEncoder` is the production choice; combine with `handle_unknown='ignore'` for unseen test levels.
+```text
+brand, km_driven, fuel, owner, selling_price
+```
 
-## 8. Connection with prior + comparison tables
+The first row is:
 
-Extends the fit-on-train rule from [Day 24](../Day_24/topic_notes.md) / [Day 25](../Day_25/topic_notes.md) and the encoder-for-columns idea from [Day 26 topics](../Day_26/topics.md): scaling handles numeric features, Day 26 handles ordered categories + target, Day 27 handles unordered categories. Days 28–29 assemble `OrdinalEncoder` + `OneHotEncoder` + scalers into one `ColumnTransformer` pipeline — the `drop`/`sparse_output`/`handle_unknown` args you meet here are exactly what you will set there.
+```text
+Maruti, 145500, Diesel, First Owner, 450000
+```
 
-### One-hot vs ordinal vs label
+The notebook has four main blocks:
 
-| | OneHot (Day 27) | Ordinal (Day 26) | Label (Day 26) |
-|---|---|---|---|
-| Level order | none | you declare it | learned (alphabetical) |
-| Output | n or n−1 columns | 1 column, codes 0..k−1 | 1-D codes |
-| Applied to | unordered inputs | ordered inputs | target only |
-| Dummy trap | yes (n−1 fix) | n/a | n/a |
+1. Inspect `owner` frequencies.
+2. One-hot encode `fuel` and `owner` with pandas, with and without `drop_first`.
+3. One-hot encode with scikit-learn and concatenate with numeric columns.
+4. Group rare `brand` levels and one-hot encode the grouped feature.
 
-### `get_dummies` vs `OneHotEncoder`
+---
 
-| | `pd.get_dummies` | `OneHotEncoder` |
-|---|---|---|
-| Style | function, no state | estimator, fit/transform |
-| Best for | quick EDA | pipelines / production |
-| Unseen test level | risk of wrong columns | `handle_unknown='ignore'` |
-| Drop level | `drop_first=True` | `drop='first'` |
-| Sparse | no | `sparse_output=True` default |
-| Inverse | no | `inverse_transform` |
+### A6. Owner frequencies
 
-### CampusX vs local
+```python
+df["owner"].value_counts()
+```
 
-| | CampusX day27 | Local DAY27 notebook |
-|---|---|---|
-| Four blocks | pandas → k−1 → sklearn → top categories | same sequence |
-| Dummy-trap theory | light headings | dedicated markdown (n−1 / multicollinearity) |
-| Split | `test_size=0.2, rs=2`, y correct (`iloc[:,-1]`) | `test_size=0.3, rs=34`, **y bug kept** as a fix-it exercise |
-| Known quirks | clean `uncommon` | typo `unommon`, duplicate import, empty cells — all documented in takeaways |
+Saved output:
 
-### From `topic_notes.md` / deep notes
+```text
+First Owner             5289
+Second Owner            2105
+Third Owner              555
+Fourth & Above Owner     174
+Test Drive Car             5
+```
 
-# One-Hot Encoding — Study Notes (Day 27)
+There are five owner levels. With all levels, one-hot encoding would create five columns; with `drop_first`, four.
 
-> Reference: `day27-one-hot-encoding` in the CampusX repo. Your work: `DAY27_OneHot-Encoding.ipynb` on cars.csv (~8128 rows: brand/km/fuel/owner → price; train 5689).
+The `Test Drive Car` level has only five rows. It is rare, but it is still a legitimate category. Whether to keep it depends on the problem: a rare level can be informative, but it can also cause unstable estimates.
 
-## 1. Basic Idea
+---
 
-No order? No numbers-with-meaning. One-hot encoding gives each category level its own binary (0/1) column: Diesel becomes its own yes/no question instead of a misleading rank number.
+### A7. Pandas `get_dummies`
 
-## 2. Intuition and Mental Model
+The first pandas call is:
 
-A multiple-choice checkbox vs a 1–5 rating: colors are checkboxes (tick Diesel *or* Petrol), satisfaction is a rating (ordered). One-hot builds checkboxes; ordinal builds ratings. Never rate colors.
+```python
+pd.get_dummies(df, columns=["fuel", "owner"])
+```
 
-## 3. Why Do We Need It?
+`columns` tells pandas which columns to expand. Other columns pass through unchanged.
 
-Numbering unordered levels (Diesel=0, Petrol=1, CNG=2) tells linear/distance models that CNG is "twice Diesel" — pure fiction that warps training. One-hot removes the lie at the cost of width.
+Saved output shape:
 
-## 4. Detailed Explanation
+```text
+(8128, 12)
+```
 
-- **`pd.get_dummies` (quick) vs `OneHotEncoder` (pipeline-safe).** `get_dummies` is fine for exploration; the estimator remembers train categories and, with `handle_unknown="ignore"`, maps unseen test levels to all-zero rows instead of crashing or misaligning columns.
-- **Dummy trap → keep n−1.** With all n dummies plus an intercept, one column is predictable from the rest (multicollinearity). `drop="first"` (or `drop_first=True`) keeps n−1; the dropped level becomes the all-zero baseline that coefficients compare against.
-- **High cardinality → group first.** Raw brands would explode width: levels under 100 rows collapse into `other` via `replace`, then encode. Your run: `value_counts(owner)` → dummies → split (70/30) → OHE block (5689, 7) → `hstack` with numerics (5689, 9).
-- **Preserved bugs (learn, don't imitate).** `y=df.iloc[:, :-1]` overlaps X (select the target column instead); `fit_transform` on `X_test` leaks (use `transform`). Both are explained in the notebook's takeaways.
+The original table had five columns. Expanding `fuel` (4 levels) and `owner` (5 levels) creates nine new columns and removes the two original columns:
 
-## 5. Examples
+$$
+5 - 2 + 9 = 12.
+$$
+
+The new columns are:
+
+```text
+fuel_CNG, fuel_Diesel, fuel_LPG, fuel_Petrol,
+owner_First Owner, owner_Fourth & Above Owner,
+owner_Second Owner, owner_Test Drive Car, owner_Third Owner
+```
+
+Pandas uses the original column name and level as the new column name, separated by an underscore. The output dtype is boolean in modern pandas.
+
+#### `drop_first=True`
+
+```python
+pd.get_dummies(df, columns=["fuel", "owner"], drop_first=True)
+```
+
+Saved shape:
+
+```text
+(8128, 10)
+```
+
+The dropped columns are `fuel_CNG` and `owner_First Owner`. The remaining dummies are:
+
+```text
+fuel_Diesel, fuel_LPG, fuel_Petrol,
+owner_Fourth & Above Owner, owner_Second Owner,
+owner_Test Drive Car, owner_Third Owner
+```
+
+That is $3+4=7$ dummy columns, so:
+
+$$
+5 - 2 + 7 = 10.
+$$
+
+The baseline is the combination `fuel=CNG`, `owner=First Owner`. An all-zero row in the dummy block represents that combination.
+
+#### Why pandas is convenient but not pipeline-safe
+
+`pd.get_dummies` is a pure function. It does not remember the training categories. If you call it separately on training and test data:
+
+- The test set may have a category that the training set did not, producing an extra column.
+- The test set may lack a category that the training set had, producing a missing column.
+- The column order may differ.
+
+For a quick exploratory analysis, this is fine. For a production pipeline, use `OneHotEncoder`, which learns the categories during `fit` and applies the same columns during `transform`.
+
+---
+
+### A8. Scikit-learn `OneHotEncoder`
+
+The notebook creates:
 
 ```python
 from sklearn.preprocessing import OneHotEncoder
-ohe = OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore")
-Xtr = ohe.fit_transform(X_train)   # train only
-Xte = ohe.transform(X_test)        # never fit_transform here
-ohe.get_feature_names_out()        # read the generated columns
+
+ohe = OneHotEncoder(
+    drop="first",
+    sparse_output=False,
+    dtype=np.int32,
+)
 ```
 
-Fuel {Diesel, Petrol, CNG, LPG} → 3 columns; Diesel-as-baseline = all-zero row.
+The arguments mean:
 
-## 6. Important Formulas
+| Argument | Meaning |
+|---|---|
+| `drop="first"` | Drop the first level of each feature, keeping $k-1$ columns. |
+| `sparse_output=False` | Return a dense NumPy array instead of a sparse matrix. |
+| `dtype=np.int32` | Store the indicators as 32-bit integers. |
 
-Width rule: n levels → n−1 columns (with intercept). Multicollinearity target: zero dependence between input columns.
+The default `handle_unknown="error"` raises an error if `transform` sees a category that was not present during `fit`.
 
-## 7. Code Connection
+#### Fitting and transforming
 
-`drop`, `sparse_output=False` (dense for inspection), `handle_unknown="ignore"` (production safety), `get_feature_names_out` (readability). `get_dummies(drop_first=True)` mirrors the behavior for quick work.
+```python
+X_train_new = ohe.fit_transform(X_train[["fuel", "owner"]])
+X_test_new = ohe.transform(X_test[["fuel", "owner"]])
+```
 
-## 8. Interpretation
+Saved training shape:
 
-- A `1` means membership, nothing more; all-zero rows mean the baseline level.
-- (5689, 7) → (5689, 9): encoded block width plus numeric columns after stacking — read shapes to verify every glue step.
+```text
+(5689, 7)
+```
 
-## 9. Common Mistakes
+The seven columns come from:
 
-1. Numbering unordered levels (the original sin this day removes).
-2. Keeping all n dummies with an intercept (dummy trap).
-3. `get_dummies` separately on train/test → mismatched columns in production.
-4. One-hotting raw IDs/high-cardinality text (Name/Ticket/Cabin) — group or drop first.
-5. The notebook's two preserved bugs above.
+- `fuel`: 4 levels, drop first -> 3 columns.
+- `owner`: 5 levels, drop first -> 4 columns.
 
-## 10. Machine Learning Connection
+$$
+3+4=7.
+$$
 
-One-hot columns feed linear/distance models honestly and become the categorical arm of [Day-28 ColumnTransformer](../Day_28/topic_notes.md) and [Day-29 pipelines](../Day_29/topic_notes.md) (`trf2`).
+The test block has the same seven columns because `transform` reuses the learned categories. This is the key advantage over `get_dummies`.
 
-## 11. Interview and Conceptual Questions
+#### Learned attributes
 
-1. What is the dummy trap and how does `drop="first"` fix it? — n dummies + intercept are collinear; n−1 removes the redundancy.
-2. `get_dummies` vs `OneHotEncoder` in production? — The estimator remembers categories and tolerates unseen levels.
-3. 30 levels, 20 rare — what do you do? — Group rare into `other`, then encode.
-4. All-zero encoded row — meaning? — The dropped baseline level.
+After fitting, `OneHotEncoder` stores:
 
-## 12. Quick Revision
+- `categories_`: one array per input feature, containing the levels in sorted order.
+- `drop_idx_`: the index of the dropped level for each feature, or `None` if no level was dropped.
+- `n_features_in_`: the number of input columns.
+- `feature_names_in_`: present when the input is a DataFrame with string column names.
 
-No order → OneHot, n−1 columns, group the rare. Fit-train/transform-test; `handle_unknown="ignore"` for the real world. Ordered inputs stay with [Day 26](../Day_26/topic_notes.md).
+You can inspect the generated feature names with:
+
+```python
+ohe.get_feature_names_out(["fuel", "owner"])
+```
+
+This returns names such as `fuel_Diesel`, `fuel_LPG`, and so on.
+
+#### `handle_unknown="ignore"`
+
+For production, a common setting is:
+
+```python
+OneHotEncoder(
+    drop="first",
+    sparse_output=False,
+    handle_unknown="ignore",
+)
+```
+
+With `ignore`, an unseen category at transform time becomes an all-zero row for that feature instead of raising an error. This is often necessary when new categories can appear in production, but it means the model cannot distinguish "unknown" from the dropped baseline unless you add an explicit unknown category.
+
+Scikit-learn also supports `min_frequency` and `max_categories` to group infrequent categories automatically, depending on the version. The notebook uses manual grouping for `brand`, which is easier to inspect.
 
 ---
 
-## Section map (Part 9 checklist)
+### A9. The concatenation step
 
-Content above covers the day’s topics. When expanding further, place new material under these headings without deleting preserved sources:
+The notebook keeps `brand` and `km_driven` alongside the encoded `fuel` and `owner` block:
 
-- **1. Introduction** — Course intro / what this day covers (from topics + notebook headings).
-- **2. Problem Being Solved** — Why this technique exists; what breaks if ignored.
-- **3. Required Foundations** — Prerequisites from earlier days.
-- **4. Conceptual Understanding** — Core idea in plain English with technical accuracy.
-- **5. Mathematical Foundation** — Formulas, variables, numerical examples (when relevant).
-- **6. Internal Working** — fit/transform internals, what is stored, execution flow.
-- **7. Python and Scikit-learn Implementation** — Complete meaningful implementation patterns.
-- **8. Syntax Breakdown** — Arguments, defaults, object vs call, return values.
-- **9. Practical Examples** — Before/after tables, runnable snippets from the day.
-- **10. Visual Interpretation** — Graphs: axes, pattern, conclusion, limits.
-- **11. Comparison with Related Techniques** — vs alternatives; when to use / avoid.
-- **12. Assumptions and Limitations** — Hard limits and edge cases.
-- **13. Common Mistakes** — Beginner + workflow mistakes with fixes.
-- **14. Real-World Applications** — Project scenarios and decision process.
-- **15. Connection to the ML Workflow** — Where it sits in the pipeline; course links.
-- **16. Interview Questions and Answers** — Levels 1–6 with reasoned answers.
-- **17. Practice Questions** — Conceptual / code / debug / decision; answers separate.
-- **18. Topic Summary and Connections** — Cheat sheet + link to next topic.
+```python
+np.hstack((
+    X_train[["brand", "km_driven"]].values,
+    X_train_new,
+)).shape
+```
+
+Saved shape:
+
+```text
+(5689, 9)
+```
+
+The calculation is:
+
+$$
+2 \text{ passthrough columns} + 7 \text{ encoded columns} = 9.
+$$
+
+However, `brand` is still a string column. `np.hstack` does not encode it; it simply places the strings next to the numeric columns. The resulting array has a mixed dtype (likely object or string), and it is **not** ready for a scikit-learn model. A complete workflow would encode `brand` as well, or drop it, or group it first.
+
+This is an important debugging lesson: a shape can look right while the contents are wrong. Always inspect `dtype` and a few rows, not just `.shape`.
 
 ---
 
-## Interview quick set
+### A10. High-cardinality brands and rare-category grouping
 
-Use preserved Q&A in the body above. Add Level 1–6 follow-ups here as you study:
+The notebook computes brand counts:
 
-1. What problem does this day solve?
-2. How does the method work internally?
-3. What is the common leakage / domain mistake?
-4. How do you compare alternatives with CV?
-5. Where does this sit in a Pipeline?
+```python
+counts = df["brand"].value_counts()
+```
 
-## Practice
+Saved counts include:
 
-Re-run `my_notebook.ipynb`, predict one output before running, then check. Update mastery checkboxes as you go.
+```text
+Maruti           2448
+Hyundai          1415
+Mahindra          772
+Tata              734
+Toyota            488
+Honda             467
+Ford              397
+Chevrolet         230
+Renault           228
+Volkswagen        186
+BMW               120
+Skoda             105
+Nissan             81
+Jaguar             71
+Volvo              67
+Datsun             65
+Mercedes-Benz      54
+Fiat               47
+...
+Peugeot             1
+```
 
-## Mastery checklist
+There are 32 brands. One-hot encoding all of them would add 31 columns after dropping one. Many of those columns would be almost always zero, which adds noise and memory cost.
 
-- [ ] I can explain the problem in plain words
-- [ ] I can write the core implementation
-- [ ] I can explain important syntax / defaults
-- [ ] I can name common mistakes and fixes
-- [ ] I can connect this day to the ML workflow
-- [ ] I can answer interview follow-ups
+The notebook sets:
+
+```python
+threshold = 100
+repl = counts[counts <= threshold].index
+```
+
+and replaces rare brands:
+
+```python
+df["brand"].replace(repl, "unommon")
+```
+
+The typo `"unommon"` is preserved in the notebook. The intended label is `"uncommon"`. The typo does not affect the grouping logic, but it produces an awkward column name and is worth fixing in new code.
+
+The saved preview of `repl` shows 15 entries, but the full count table implies more brands at or below 100. The displayed index is truncated or stale. When re-running, inspect `len(repl)` and `df["brand"].nunique()` directly rather than trusting the saved preview.
+
+After grouping, the saved dummy output has 13 columns:
+
+```text
+BMW, Chevrolet, Ford, Honda, Hyundai, Mahindra, Maruti,
+Renault, Skoda, Tata, Toyota, Volkswagen, unommon
+```
+
+That is 12 frequent brands plus the rare-category bucket. The exact set depends on the threshold. The grouping keeps the feature usable without exploding the width.
+
+#### Choosing the threshold
+
+A threshold is a modelling choice. A low threshold keeps more categories and more columns; a high threshold groups more categories and may lose useful distinctions. Common strategies:
+
+- Group categories with fewer than a fixed number of rows.
+- Keep the top $m$ categories and group the rest.
+- Group categories whose frequency is below a percentage of the dataset.
+- Use `OneHotEncoder(min_frequency=...)` where supported.
+
+The threshold should be chosen with validation data, not only by convenience.
+
+---
+
+### A11. Preserved bugs in the notebook
+
+The Day 27 notebook contains several bugs that are intentionally preserved as learning material. Do not copy them into a production workflow.
+
+#### Bug 1: `y` is not the target
+
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    df.iloc[:, 0:4],
+    df.iloc[:, :-1],
+    test_size=0.3,
+    random_state=34,
+)
+```
+
+`X` is the first four columns: `brand`, `km_driven`, `fuel`, `owner`. `y` is also the first four columns because `iloc[:, :-1]` excludes only the last column (`selling_price`). So `y` overlaps `X` and is not the target.
+
+The correct target is:
+
+```python
+y = df["selling_price"]
+```
+
+or:
+
+```python
+y = df.iloc[:, -1]
+```
+
+This bug means the notebook cannot train a valid supervised model. No model is trained in the notebook, so no accuracy is reported. If you add a model without fixing the target, the result is meaningless.
+
+#### Bug 2: `brand` remains a string
+
+The `hstack` block keeps `brand` as a raw string. A model cannot fit on that array. The notebook is demonstrating shape arithmetic, not a finished feature matrix.
+
+#### Bug 3: typo `"unommon"`
+
+The rare-category bucket is named `"unommon"` instead of `"uncommon"`. It is harmless but confusing.
+
+#### Bug 4: duplicate import and empty cells
+
+`OneHotEncoder` is imported twice, and some cells contain only intermediate variables or no output. These are cleanup issues, not conceptual errors.
+
+#### Bug 5: absolute dataset path
+
+The CSV is loaded from an absolute Windows path. Use `datasets/cars.csv` for portability.
+
+#### What is correct
+
+- `OneHotEncoder` is fitted on `X_train` and used to `transform` `X_test`.
+- The encoder is not refitted on the test set.
+- `drop="first"` is used consistently.
+- The shape calculations are correct for the encoded block.
+
+The notebook's takeaways cell warns about fitting on test data. The code shown here already uses `transform` for the test block, which is the right pattern.
+
+---
+
+### A12. Complete data flow
+
+```text
+cars.csv (8128 x 5)
+   |
+   v
+inspect owner counts
+   |
+   v
+pandas one-hot: 12 columns (full), 10 columns (drop first)
+   |
+   v
+train/test split (70/30, rs=34)
+   |
+   +---------------------------+
+   |                           |
+   v                           v
+X_train (5689 x 4)          X_test (2439 x 4)
+   |                           |
+   v                           v
+OneHotEncoder.fit_transform  OneHotEncoder.transform
+on fuel + owner              on fuel + owner
+   |                           |
+   v                           v
+(5689 x 7)                   (2439 x 7)
+   |
+   v
+hstack with brand + km_driven
+   |
+   v
+(5689 x 9) but brand is still a string
+```
+
+The final array is not model-ready because `brand` is unencoded. A corrected workflow would encode `brand` or group it first.
+
+---
+
+### A13. One-hot versus ordinal versus label encoding
+
+| Method | Applied to | Order | Output width | Main risk |
+|---|---|---|---|---|
+| One-hot | Nominal inputs | None | $k$ or $k-1$ columns | Width explosion |
+| Ordinal | Ordered inputs | Declared | 1 column | False spacing / wrong order |
+| Label | Target vector | Learned | 1-D vector | Misuse on inputs |
+
+For `fuel`, one-hot is appropriate because fuel types have no order.
+
+For `review` (Poor, Average, Good), ordinal encoding is appropriate if the order is meaningful.
+
+For `purchased` (No, Yes), label encoding is appropriate because it is the target.
+
+---
+
+### A14. One-hot versus target encoding
+
+Target encoding replaces each category with a statistic of the target, such as the mean target value for that category. It can capture more information with fewer columns, but it is prone to leakage: the target statistic for a row may include that row's own target. It requires out-of-fold fitting.
+
+One-hot encoding makes no use of the target. It is safer and easier to explain, but it can be wide. The choice depends on cardinality, data size, and the model.
+
+---
+
+### A15. Common mistakes and debugging
+
+#### Mistake 1: using `get_dummies` separately on train and test
+
+```python
+# Wrong: different columns, different order
+X_train = pd.get_dummies(X_train)
+X_test = pd.get_dummies(X_test)
+```
+
+Fix: use `OneHotEncoder` fitted on train, or align the columns explicitly after `get_dummies`.
+
+#### Mistake 2: fitting the encoder on the full dataset
+
+```python
+# Wrong: learns categories from test data
+ohe.fit(df[["fuel", "owner"]])
+```
+
+Fix: `ohe.fit(X_train[["fuel", "owner"]])`.
+
+#### Mistake 3: keeping all $k$ dummies with an intercept
+
+This creates perfect multicollinearity. Use `drop="first"` or `drop_first=True` when coefficient interpretation matters.
+
+#### Mistake 4: one-hotting high-cardinality IDs
+
+A column with thousands of unique IDs should not be one-hot encoded. Group rare categories, hash, target-encode, or drop the ID.
+
+#### Mistake 5: forgetting `handle_unknown`
+
+If production data can contain new categories, the default `handle_unknown="error"` will crash. Decide on a policy: ignore, map to an unknown category, or retrain.
+
+#### Mistake 6: checking only the shape
+
+A shape of `(5689, 9)` can hide a string column or a wrong dtype. Inspect `dtype`, column names, and sample rows.
+
+#### Mistake 7: treating the encoded values as quantities
+
+A one-hot 1 means membership, not magnitude. The columns are indicators, not measurements.
+
+#### Mistake 8: using one-hot for ordered features
+
+If the order matters, one-hot discards it. For `education`, one-hot may be more flexible but loses the monotone structure. Choose based on the modelling assumption and validate.
+
+---
+
+### A16. Where this sits in the ML workflow
+
+One-hot encoding belongs after the train/test split and before model training:
+
+```text
+Raw data
+   |
+   v
+Identify nominal columns
+   |
+   v
+Train/test split
+   |
+   v
+Fit OneHotEncoder on X_train
+   |
+   v
+Transform X_train and X_test
+   |
+   v
+Train model
+   |
+   v
+Evaluate
+```
+
+In a full preprocessing pipeline:
+
+```text
+ColumnTransformer
+   ├── nominal columns -> SimpleImputer -> OneHotEncoder
+   ├── ordinal columns -> OrdinalEncoder
+   ├── numeric columns -> SimpleImputer -> Scaler
+   └── high-cardinality -> grouping / target encoding
+```
+
+Days 28–29 show how to assemble these steps into a `ColumnTransformer` and a `Pipeline`.
+
+---
+
+### A17. Interview preparation
+
+#### Level 1 — Recall
+
+**Q1. What is one-hot encoding?**
+
+It represents each level of a categorical variable as a binary column. A row has a 1 in the column corresponding to its level and 0 elsewhere.
+
+**Q2. When should one-hot encoding be used?**
+
+For nominal input features, where the categories have no meaningful order.
+
+**Q3. What is the dummy-variable trap?**
+
+With all $k$ one-hot columns and an intercept, the columns sum to the intercept column, creating perfect multicollinearity. Dropping one level avoids the trap.
+
+#### Level 2 — Explanation
+
+**Q4. Why is integer encoding bad for nominal features?**
+
+It invents an order and a distance between categories. A model may learn relationships that do not exist.
+
+**Q5. Why keep $k-1$ columns instead of $k$?**
+
+The dropped level becomes the baseline. The remaining coefficients are interpreted relative to it, and the design matrix is no longer perfectly collinear with the intercept.
+
+**Q6. What is the difference between `pd.get_dummies` and `OneHotEncoder`?**
+
+`get_dummies` is a stateless pandas function, convenient for EDA. `OneHotEncoder` is a scikit-learn estimator that learns categories during `fit`, remembers them, and can be used in pipelines.
+
+#### Level 3 — Application
+
+**Q7. A feature has 100 levels. How many columns does one-hot encoding create with and without dropping one?**
+
+Without dropping: 100 columns. With `drop="first"`: 99 columns. If the model has an intercept, 99 is the safer choice for coefficient interpretation.
+
+**Q8. How would you handle a brand column with 500 levels?**
+
+Group rare brands into an "other" bucket, keep the top $m$ brands, or use target encoding/hashing. Do not one-hot all 500 levels unless the dataset is large enough and the model can handle the width.
+
+**Q9. What happens to an unseen category with `handle_unknown="ignore"`?**
+
+The encoded row for that feature is all zeros. The model treats it like the baseline category unless you add an explicit unknown indicator.
+
+#### Level 4 — Analysis
+
+**Q10. Why can one-hot encoding increase overfitting?**
+
+It increases the number of parameters. Rare categories can get coefficients that fit noise. Regularization, grouping, or a simpler encoding can help.
+
+**Q11. Why is one-hot encoding not always the best choice for high-cardinality features?**
+
+The design matrix becomes very wide and sparse. Many columns have very few non-zero entries, which makes estimation unstable and memory usage high.
+
+**Q12. Does one-hot encoding lose information compared with ordinal encoding?**
+
+It loses the order, which is desirable for nominal variables. It does not lose category membership. For ordered variables, losing the order may be a disadvantage.
+
+#### Level 5 — Design
+
+**Q13. How would you encode a dataset with numeric, ordinal, and nominal columns?**
+
+Use a `ColumnTransformer`: numeric columns through an imputer and scaler; ordinal columns through `OrdinalEncoder` with declared order; nominal columns through `OneHotEncoder`. Put the whole transformer inside a pipeline.
+
+**Q14. How would you handle a new category in production?**
+
+Options: `handle_unknown="ignore"`, an explicit "unknown" category in training, a hashing encoder, or retraining with the new category. The choice depends on whether the new category is expected and whether the model can learn from it.
+
+**Q15. How would you choose the rare-category threshold?**
+
+Use validation performance and the frequency distribution. A threshold that is too low keeps noisy rare levels; one that is too high merges useful categories. Treat it as a hyperparameter and evaluate it honestly.
+
+#### Level 6 — Evaluation
+
+**Q16. How would you compare one-hot with target encoding?**
+
+Use the same cross-validation folds and model. For target encoding, fit the encoding inside each fold to avoid leakage. Compare validation performance, stability, and interpretability.
+
+**Q17. Why might dropping a level hurt a tree model?**
+
+Trees can split on each indicator independently. Dropping a level removes the explicit indicator for the baseline, but the baseline is still represented by all zeros. In practice, trees usually handle either representation, though the split search differs.
+
+**Q18. What would you monitor after deployment?**
+
+The frequency of unseen categories, the distribution of encoded columns, and the model's calibration. A new category or a large shift in category frequencies may require retraining.
+
+#### Level 7 — Advanced
+
+**Q19. Can one-hot encoding be used for the target?**
+
+It can, for some neural-network losses, but standard scikit-learn classifiers expect a one-dimensional target of class ids. For those models, use `LabelEncoder` or pass string labels directly if supported.
+
+**Q20. What is the difference between one-hot encoding and hashing?**
+
+Hashing maps categories to a fixed number of columns using a hash function. It bounds the width and handles unseen categories, but it can cause collisions. One-hot encoding is exact but can be very wide.
+
+**Q21. How does one-hot encoding interact with regularization?**
+
+Each level gets its own coefficient. With L2 regularization, the coefficients are shrunk toward zero. With L1, some coefficients can become exactly zero, effectively selecting levels. The baseline choice affects the interpretation of the remaining coefficients.
+
+---
+
+### A18. Exam-style questions with worked answers
+
+#### Question 1
+
+A nominal feature has levels A, B, C, D. How many columns does one-hot encoding create with `drop_first=True`, and what does an all-zero row mean?
+
+**Answer**
+
+Four levels, drop one -> three columns. Suppose A is dropped. The columns are `B`, `C`, `D`. An all-zero row means the category is A, the baseline. The coefficients of B, C, and D are interpreted relative to A.
+
+#### Question 2
+
+A dataset has 8,128 rows and a `brand` column with 32 levels. One-hot encoding all levels would create how many columns after dropping one? Why might that be a problem?
+
+**Answer**
+
+$32-1=31$ columns. Many brands have very few rows, so most of these columns are almost always zero. The matrix becomes wide and sparse, estimation can be unstable, and memory cost increases. Grouping rare brands or using another encoding is often better.
+
+#### Question 3
+
+Explain why `pd.get_dummies` can produce different columns for training and test data.
+
+**Answer**
+
+`get_dummies` learns the categories from the data it is given. If the test set has a category that the training set lacks, it creates an extra column. If the test set lacks a category that the training set has, it creates fewer columns. The column order can also differ. `OneHotEncoder` avoids this by learning the categories once during `fit`.
+
+#### Question 4
+
+A model is trained with all four `fuel` dummies and an intercept. Explain why the coefficients are not uniquely identifiable.
+
+**Answer**
+
+For every row, the four fuel dummies sum to 1, which is the intercept column. Therefore the design matrix has a linear dependency: one column is a linear combination of the others. The normal equations have infinitely many solutions for the coefficients. Predictions may still be unique, but individual coefficients are not.
+
+#### Question 5
+
+The Day 27 notebook sets `y = df.iloc[:, :-1]`. Explain the bug and the fix.
+
+**Answer**
+
+`df.iloc[:, :-1]` selects all columns except the last one, which is `selling_price`. So `y` contains `brand`, `km_driven`, `fuel`, and `owner` — the same columns as `X`, not the target. The fix is `y = df["selling_price"]` or `y = df.iloc[:, -1]`. Without the fix, any supervised model would be trained on the wrong target.
+
+---
+
+### A19. Revision summary
+
+- One-hot encoding gives each nominal level its own binary column.
+- It avoids inventing an order.
+- With an intercept, drop one level to avoid perfect multicollinearity.
+- `pd.get_dummies` is convenient for EDA but stateless.
+- `OneHotEncoder` learns categories and is pipeline-safe.
+- Fit on training data, transform test data.
+- `handle_unknown="ignore"` maps unseen categories to all zeros.
+- High-cardinality features need grouping, hashing, target encoding, or another strategy.
+- Check dtypes and column contents, not only shapes.
+- The Day 27 notebook preserves several bugs; the main one is that `y` is not the target.
+
+---
+
+## Part B — Advanced Reading and Reference
+
+### B1. The linear algebra of the dummy trap
+
+Let $\mathbf{X}$ be the design matrix with an intercept column $\mathbf{1}$ and all $k$ one-hot columns $\mathbf{D}_1,\dots,\mathbf{D}_k$. For every row:
+
+$$
+\mathbf{1} = \sum_{j=1}^{k}\mathbf{D}_j.
+$$
+
+Therefore the columns are linearly dependent, and $\mathbf{X}$ does not have full column rank. In ordinary least squares, the normal equations
+
+$$
+\mathbf{X}^\top\mathbf{X}\boldsymbol\beta=\mathbf{X}^\top\mathbf{y}
+$$
+
+have infinitely many solutions when $\mathbf{X}^\top\mathbf{X}$ is singular. Dropping one dummy column restores full rank (assuming no other collinearity).
+
+For ridge regression, the objective
+
+$$
+\lVert\mathbf{y}-\mathbf{X}\boldsymbol\beta\rVert_2^2+\lambda\lVert\boldsymbol\beta\rVert_2^2
+$$
+
+has a unique solution even when $\mathbf{X}$ is rank-deficient, because the penalty makes the objective strictly convex. The coefficients are still not uniquely interpretable in the original parameterization, and the baseline choice affects them.
+
+---
+
+### B2. Sparse output
+
+By default, `OneHotEncoder(sparse_output=True)` returns a scipy sparse matrix. For a feature with many levels, most entries are zero, so a sparse representation saves memory.
+
+```python
+ohe = OneHotEncoder(drop="first", sparse_output=True)
+X_train_sparse = ohe.fit_transform(X_train[["fuel", "owner"]])
+```
+
+Many scikit-learn estimators accept sparse matrices. If a downstream step requires a dense array, convert explicitly with `.toarray()`, but be aware of the memory cost.
+
+The notebook uses `sparse_output=False` because it wants to inspect and `hstack` the array. For large high-cardinality features, sparse output is often the better default.
+
+---
+
+### B3. Feature names
+
+`get_feature_names_out` returns the names of the generated columns:
+
+```python
+ohe.get_feature_names_out(["fuel", "owner"])
+```
+
+Example names:
+
+```text
+fuel_Diesel
+fuel_LPG
+fuel_Petrol
+owner_Fourth & Above Owner
+owner_Second Owner
+owner_Test Drive Car
+owner_Third Owner
+```
+
+These names are useful for debugging, feature importance, and model documentation. If the input is a NumPy array, you must supply the input feature names.
+
+---
+
+### B4. Handling unknown categories
+
+`handle_unknown` options:
+
+- `"error"`: raise an error on unseen categories. This is the default and is useful for catching data problems.
+- `"ignore"`: encode unseen categories as all zeros. This is common in production.
+- `"infrequent_if_exist"`: map unseen categories to the infrequent category if one exists. This depends on `min_frequency`/`max_categories`.
+
+With `handle_unknown="ignore"` and `drop="first"`, an unseen category is indistinguishable from the dropped baseline in the encoded representation. If that distinction matters, add an explicit `"Unknown"` category during training or use an additional missing-indicator feature.
+
+---
+
+### B5. Infrequent-category grouping in scikit-learn
+
+Recent versions of scikit-learn support automatic grouping:
+
+```python
+ohe = OneHotEncoder(
+    min_frequency=100,
+    max_categories=20,
+    handle_unknown="infrequent_if_exist",
+    sparse_output=False,
+)
+```
+
+The exact behaviour depends on the version. `min_frequency` can be an integer count or a proportion. `max_categories` limits the total number of output columns. The grouped category is named `infrequent_sklearn` by default.
+
+The notebook performs manual grouping with pandas, which is transparent and easy to inspect. Automatic grouping is convenient in pipelines but requires checking the version's semantics.
+
+---
+
+### B6. One-hot encoding and model families
+
+#### Linear models
+
+One-hot columns let a linear model estimate a separate coefficient per level. With $k-1$ columns, the dropped level is the reference. This is the standard way to include nominal predictors in a linear model.
+
+#### Trees
+
+Trees can split on individual indicator columns. Full one-hot encoding can make the tree consider many binary splits, which increases training time. Ordinal encoding of a nominal feature is usually wrong because it imposes an order, but trees can sometimes exploit arbitrary codes; this is not a principled solution.
+
+#### Distance-based models
+
+One-hot encoding creates a binary space. The Euclidean distance between two different categories is $\sqrt{2}$ (if both have one 1 and the rest 0), while the distance between the same category is 0. This is a reasonable default, but it treats all category differences as equally large. Embeddings or target encoding can capture richer similarities.
+
+#### Neural networks
+
+One-hot vectors are common inputs for categorical features. Embedding layers learn dense representations and are often more efficient for high cardinality.
+
+---
+
+### B7. One-hot versus frequency encoding
+
+Frequency encoding replaces each category with its count or proportion in the training data. It uses one column and can capture rarity, but it imposes an order based on frequency and may not generalise to unseen categories. It is sometimes used for high-cardinality features, but it can leak if computed on the full dataset.
+
+One-hot encoding is exact and order-free but wide. The choice depends on the cardinality and the model.
+
+---
+
+### B8. One-hot versus target encoding
+
+Target encoding replaces a category with a statistic of the target, such as the mean target for that category. It can be powerful for high-cardinality features, but it is prone to leakage. A safe implementation uses out-of-fold estimates and smoothing:
+
+$$
+\text{encoding}_c
+=
+\frac{n_c\bar{y}_c + m\bar{y}}{n_c+m},
+$$
+
+where $n_c$ is the category count, $\bar{y}_c$ is the category mean, $\bar{y}$ is the global mean, and $m$ is a smoothing parameter. The smoothing shrinks rare categories toward the global mean.
+
+One-hot encoding does not use the target, so it is safer but wider.
+
+---
+
+### B9. One-hot versus hashing
+
+Hashing maps categories to a fixed number of columns:
+
+$$
+h(c) \bmod B,
+$$
+
+where $B$ is the number of buckets. It bounds the width and handles unseen categories, but collisions can merge unrelated categories. It is useful for very high cardinality and streaming data.
+
+One-hot encoding is exact but can be impractically wide.
+
+---
+
+### B10. Advanced interview questions
+
+**Q1. Why does `drop="first"` drop the first category in sorted order rather than an arbitrary category?**
+
+Scikit-learn sorts the categories and drops the first by default. The choice of baseline is arbitrary but affects coefficient interpretation. You can specify which category to drop with `drop=[...]` or by ordering the categories.
+
+**Q2. What is the difference between `drop=None` and `drop="if_binary"`?**
+
+`drop=None` keeps all $k$ columns for every feature. `drop="if_binary"` drops one column only for binary features, keeping all columns for multi-level features. The latter is useful when you want a single binary indicator but full flexibility for multi-level features.
+
+**Q3. How does one-hot encoding affect the intercept?**
+
+With all $k$ dummies, the intercept is collinear with the dummies. With $k-1$, the intercept represents the baseline category's expected value (in a linear model with no other features). The remaining coefficients are differences from the baseline.
+
+**Q4. Why is one-hot encoding not a solution for high-cardinality IDs?**
+
+IDs usually have no generalisable meaning, and one-hot encoding creates a column per ID. The model can memorize IDs and overfit. IDs should usually be dropped or treated with a method designed for high cardinality.
+
+**Q5. Can one-hot encoding handle missing values?**
+
+`OneHotEncoder` can treat missing values as a category if configured, or you can impute before encoding. The right choice depends on whether missingness is informative. Day 37 covers missing categorical data.
+
+**Q6. How would you explain the dummy trap to a non-technical stakeholder?**
+
+If you give the model one yes/no column for every category plus an overall baseline, the columns become redundant: knowing all but one tells you the last. The model cannot tell which category is responsible for the effect. Dropping one category gives the model a reference point.
+
+**Q7. What is the effect of one-hot encoding on feature importance?**
+
+Each level gets its own importance. This can reveal non-monotone effects, but it also splits importance across correlated columns. For a feature with many levels, the individual importances may be unstable.
+
+**Q8. How would you choose between one-hot and ordinal encoding for an ordered feature?**
+
+Consider whether the effect is monotone and whether the spacing between levels is meaningful. If a single coefficient along the order is plausible, ordinal encoding is simpler. If the effect may be non-monotone, one-hot is more flexible. Validate both with cross-validation.
+
+---
+
+### B11. Notebook coverage matrix
+
+| Notebook area | Cells | What it teaches | Status |
+|---|---:|---|---|
+| Imports and theme | 3–5 | Setup | No output |
+| Load cars data | 6–7 | Dataset shape and columns | Saved table |
+| Owner counts | 9 | Category frequencies | Saved counts |
+| Pandas one-hot | 11–12 | Full dummy expansion | Saved 12 columns |
+| Drop first | 13–14 | $k-1$ encoding | Saved 10 columns |
+| Train/test split | 16 | Split and preserved `y` bug | Saved sample |
+| sklearn encoder | 17–21 | Fit/transform and hstack | Saved shapes |
+| Top categories | 22–27 | Rare-brand grouping | Saved counts and dummies |
+| Experiment | 28 | Threshold exercise | Markdown |
+| Key takeaways | 29 | Revision and bug list | Markdown |
+
+No model is trained. The notebook ends after encoding and grouping.
+
+---
+
+### B12. Source fidelity and caveats
+
+- Saved outputs come from the user's environment. They are reported as saved results, not independently reproduced.
+- The notebook loads `cars.csv` from an absolute Windows path. The local copy is at `datasets/cars.csv`; the relative-path version is a portability correction.
+- The notebook's `y` is `df.iloc[:, :-1]`, which overlaps `X` and is not the target. This is a preserved bug. The chapter does not claim any model result.
+- The `hstack` output keeps `brand` as a string, so the final array is not model-ready.
+- The rare-category bucket is spelled `"unommon"` in the notebook; the intended spelling is `"uncommon"`.
+- The saved `repl` preview appears truncated relative to the full count table. Re-run the cell to see the complete list.
+- The notebook has no graphs, so no graph interpretation is claimed.
+- No accuracy, cross-validation, or feature-importance result is reported.
+
+---
+
+### B13. References
+
+- scikit-learn documentation: `OneHotEncoder`, `OrdinalEncoder`, `LabelEncoder`.
+- pandas documentation: `get_dummies`.
+- CampusX Day 27: One Hot Encoding — Handling Categorical Data.
+- Day 26 notes: ordinal and label encoding.
+- Day 28 notes: `ColumnTransformer`.
+- Day 29 notes: pipelines and cross-validation.
+
+---
+
+### B14. Final connection
+
+One-hot encoding is the standard answer to a nominal feature, but it is not a free lunch. It avoids false order at the cost of width, and it requires a careful policy for rare and unseen categories. The next day shows how to route different column types — numeric, ordinal, and nominal — through one `ColumnTransformer`, which is the natural home for the encoders you have just learned.

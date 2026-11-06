@@ -1,40 +1,39 @@
-# Day_29
+# Day 29 — Machine Learning Pipelines A–Z
 
 CampusX 100 Days of ML · folder `Day_29/`
 
-## Day number
-
-**29**
-
 ## Main topics
 
-Machine learning pipelines A–Z: the manual workflow, the pipeline workflow, the broken counterexample, pipeline export, and one-line inference.
+- Manual Titanic preprocessing without a pipeline.
+- `Pipeline` and `ColumnTransformer` automation.
+- A deliberately broken workflow for debugging practice.
+- Cross-validation, `GridSearchCV`, pipeline export, and inference.
 
 ## Learning objectives
 
-1. Run the full manual preprocessing + training workflow without a pipeline.
-2. Explain what `Pipeline` and `ColumnTransformer` automate and in what order.
-3. Diagnose the classic broken pipeline (leakage, wrong order) and fix it.
-4. Export a fitted pipeline with pickle and reuse it for unseen rows.
-5. Compare manual inference with pipeline inference.
+1. Run the manual impute → encode → concatenate → train workflow.
+2. Explain `fit`, `transform`, and `predict` for a pipeline.
+3. Diagnose unassigned drops, swapped train/test blocks, and column-index bugs.
+4. Validate with `cross_val_score` and tune with `GridSearchCV`.
+5. Export a fitted pipeline and predict from raw rows.
 
 ## Notebooks
 
-| File | Role | Cells |
-|------|------|-------|
-| `DAY29_Workflow-Without-Pipelines.ipynb` | Manual preprocessing + training workflow | 25 |
-| `DAY29_Titanic-Using-Pipeline.ipynb` | Correct end-to-end pipeline (improved personal copy) | 46 |
-| `DAY29_Sklearn-Pipelines-broken.ipynb` | Deliberately broken counterexample — do not copy | 17 |
-| `DAY29_Predict-Without-Pipeline.ipynb` | Manual inference on new rows | 15 |
-| `DAY29_Pipeline-Export-Predict.ipynb` | Export fitted pipeline and predict in one line | 9 |
-| `reference_notebooks/reference_notebook*.ipynb` | CampusX originals (4) — **do not edit** | — |
+| File | Role |
+|------|------|
+| `DAY29_Workflow-Without-Pipelines.ipynb` | Correct manual workflow |
+| `DAY29_Titanic-Using-Pipeline.ipynb` | Five-stage pipeline; preserves the notebook's `trf2` index bug |
+| `DAY29_Sklearn-Pipelines-broken.ipynb` | Deliberately broken counterexample — do not copy |
+| `DAY29_Predict-Without-Pipeline.ipynb` | Manual inference; saved kernel crash |
+| `DAY29_Pipeline-Export-Predict.ipynb` | Load `pipe.pkl` and predict a raw row |
+| `reference_notebooks/` | Four CampusX originals — **do not edit** |
 
 ## Dataset and artifacts
 
 | File | Source |
 |------|--------|
-| `datasets/train.csv` | CampusX course dataset (Titanic) |
-| `models/*.pkl` | Artifacts saved by the export notebook |
+| `datasets/train.csv` | CampusX Titanic dataset |
+| `models/*.pkl` | Manual-workflow encoders and classifier |
 | `pipe.pkl` | Exported fitted pipeline |
 
 ## Dependencies
@@ -51,26 +50,9 @@ pip install pandas numpy scikit-learn jupyter
 ## How to run
 
 1. Open `Day_29/` as the working directory.
-2. Run the notebooks in this order: workflow without pipelines → using pipeline → broken → predict without pipeline → export/predict.
-3. Read `notes.md` for the unified theory and interview material.
+2. Run the notebooks in this order: manual workflow → pipeline → broken → manual inference → export/predict.
+3. Read `notes.md` for theory, the preserved bugs, and interview material.
 
-## Daily folder structure
+## Notes
 
-```text
-Day_29/
-├── DAY29_Workflow-Without-Pipelines.ipynb
-├── DAY29_Titanic-Using-Pipeline.ipynb
-├── DAY29_Sklearn-Pipelines-broken.ipynb
-├── DAY29_Predict-Without-Pipeline.ipynb
-├── DAY29_Pipeline-Export-Predict.ipynb
-├── notes.md
-├── README.md
-├── reference_notebooks/  (4 originals)
-├── datasets/
-├── models/
-└── pipe.pkl
-```
-
-## Status
-
-All five personal notebooks restored under their original `DAY29_*` names, matching the four official notebooks plus one personal counterexample. `notes.md` covers all of them.
+The pipeline notebook's `trf2` selects `[1, 6]` after `trf1`, which are `Embarked` and `Fare` — not `Sex` and `Embarked`. This preserved bug is explained in `notes.md`; do not silently "fix" the notebook.

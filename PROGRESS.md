@@ -8,9 +8,9 @@
 
 ## Current objective
 
-**Course expansion is paused except for the user-requested Day 41 theory class. The current priority is applying the approved Day 39 two-layer pedagogical standard to every existing `notes.md`: keep the technical depth, teach it in a gradual, explanation-first narrative, and split each chapter into Part A (main learning chapter, sufficient on its own) and Part B (optional advanced reference). There is no mandatory word count. `Day_39/notes.md` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `Day_23`, `Day_24`, `DAY_31`, and `DAY_32` have been rewritten and validated. `Day_41/notes.md` is a validated theory-only supplement for the user-supplied YouTube outlier class; it is not an official vendor day. Do not create other new day folders, notes, reference copies, or datasets until the existing notes have been rewritten.**
+**Course expansion is paused except for the user-requested Day 41 theory class. The current priority is applying the approved Day 39 two-layer pedagogical standard to every existing `notes.md`: keep the technical depth, teach it in a gradual, explanation-first narrative, and split each chapter into Part A (main learning chapter, sufficient on its own) and Part B (optional advanced reference). There is no mandatory word count. `Day_39/notes.md` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `Day_23`, `Day_24`, `Day_25`, `Day_26`, `Day_27`, `Day_28`, `Day_29`, `Day_30`, `DAY_31`, and `DAY_32` have been rewritten and validated. `Day_41/notes.md` is a validated theory-only supplement for the user-supplied YouTube outlier class; it is not an official vendor day. Do not create other new day folders, notes, reference copies, or datasets until the existing notes have been rewritten.**
 
-Next: rewrite the remaining existing notes in sequence, starting with Days 25–30; then Days 33–38 and 40; then Days 42–45 and 47–49; then Days 50–53; then Days 55–56.
+Next: rewrite the remaining existing notes in sequence, starting with Days 33–38 and 40; then Days 42–45 and 47–49; then Days 50–53; then Days 55–56.
 
 ### Folder policy (course-wide preparation)
 
@@ -44,7 +44,7 @@ Day_XX/                      # or existing uppercase DAY_XX
 
 ---
 
-## Course-wide coverage table (inventory verified 2026-11-02; Days 16–24, 31, and 32 rewritten 2026-11-04–06)
+## Course-wide coverage table (inventory verified 2026-11-02; Days 16–30, 31, and 32 rewritten 2026-11-04–06)
 
 Status meanings: **NOTES PRESENT** = an older notes file exists but has not been audited against the new depth standard; **NOTES COMPLETE** = deep notes written and checked (math plus source/content spot-checks); **REWRITTEN (DAY 39 STANDARD)** = two-layer Part A/Part B rewrite validated for math, structure, and content; **THEORY NOTES** = validated theory-only supplement with no official notebook or dataset; **TYPESET** = completed and math-validated on 2026-11-02; **SCAFFOLDED** = README/source map/datasets prepared, deep notes pending; **EXTRA** = no official numbered source; **UNNUMBERED** = official module without a course-day number.
 
@@ -59,12 +59,12 @@ Status meanings: **NOTES PRESENT** = an older notes file exists but has not been
 | 21 | `day21-bivariate-analysis` | 1 | No | `train.csv` | `Day_21` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
 | 22 | `day22-pandas-profiling` | 1 | No | `train.csv` | `Day_22` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
 | 24 | `day24-standardization` | 1 | No | `Social_Network_Ads.csv` | `Day_24` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; STRUCTURE; CONTENT) |
-| 25 | `day25-normalization` | 1 | No | `wine_data.csv` | `Day_25` | NOTES PRESENT | PENDING AUDIT |
-| 26 | `day26-ordinal-encoding` | 1 | No | `customer.csv` | `Day_26` | NOTES PRESENT | PENDING AUDIT |
-| 27 | `day27-one-hot-encoding` | 1 | No | `cars.csv` | `Day_27` | NOTES PRESENT | PENDING AUDIT |
-| 28 | `day28-column-transformer` | 1 | No | `covid_toy.csv` | `Day_28` | NOTES PRESENT | PENDING AUDIT |
-| 29 | `day29-sklearn-pipelines` | 4 | No | `train.csv`; generated `.pkl` models | `Day_29` | NOTES PRESENT | PENDING AUDIT |
-| 30 | `day30-function-transformer` | 1 | No | `train.csv` | `Day_30` | NOTES PRESENT | PENDING AUDIT |
+| 25 | `day25-normalization` | 1 | No | `wine_data.csv` | `Day_25` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
+| 26 | `day26-ordinal-encoding` | 1 | No | `customer.csv` | `Day_26` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
+| 27 | `day27-one-hot-encoding` | 1 | No | `cars.csv` | `Day_27` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
+| 28 | `day28-column-transformer` | 1 | No | `covid_toy.csv` | `Day_28` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
+| 29 | `day29-sklearn-pipelines` | 4 | No | `train.csv`; generated `.pkl` models | `Day_29` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
+| 30 | `day30-function-transformer` | 1 | No | `train.csv` | `Day_30` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
 | 31 | `day31-power-transformer` | 1 | Yes | `concrete_data.csv` | `DAY_31` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
 | 32 | `day32-binning-and-binarization` | 2 | Yes | `train.csv` | `DAY_32` | **REWRITTEN (DAY 39 STANDARD)** | PASS (MATH; PEDAGOGY; CONTENT) |
 | 33 | `day33-handling-mixed-variables` | 1 | Yes | `titanic.csv` | `DAY_33` | NOTES COMPLETE | PASS (MATH; CONTENT) |
@@ -401,6 +401,19 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 - Validation: 268 math items (90 display, 178 inline) rendered by KaTeX with **0 errors**; 122 balanced fences; 0 raw LaTeX delimiters; 0 Mermaid diagrams.
 - `Day_24/README.md` rewritten with the actual notebook inventory, dataset, dependencies, saved-output warning, run order, and validation status.
 
+## Day 25–30 Day 39-standard rewrite (2026-11-06)
+
+`Day_25` through `Day_30` `notes.md` and `README.md` were rewritten in place to the two-layer standard. No notebook, dataset, `vendor/`, or `reference_notebooks/` changes were made.
+
+- `Day_25/notes.md`: **1,216 lines / 45,733 bytes / 6,788 words**; 70 fences; 100 math items (27 display, 73 inline); 0 KaTeX errors. Covers normalization, MinMaxScaler, train/test fitting, custom ranges, and the notebook's absolute path and duplicate cells.
+- `Day_26/notes.md`: **950 lines / 37,044 bytes / 5,619 words**; 76 fences; 13 math items (4 display, 9 inline); 0 KaTeX errors. Covers ordinal versus label encoding, category order, unseen categories, and the saved customer split.
+- `Day_27/notes.md`: **1,044 lines / 39,386 bytes / 5,935 words**; 76 fences; 47 math items (11 display, 36 inline); 0 KaTeX errors. Covers one-hot encoding, dummy-variable trap, `drop_first`, `get_dummies`, and the notebook's target-selection bug.
+- `Day_28/notes.md`: **938 lines / 35,689 bytes / 5,084 words**; 56 fences; 9 math items (4 display, 5 inline); 0 KaTeX errors. Covers manual concatenation, `ColumnTransformer` triples, `remainder`, output width, and preserved bugs. The automated path one-hot encodes `age`/`gender` and passes `city` as a raw string; `fit_transform(X_test)` refits on test. Saved CT test shape `(20,20)`; reproduced training shape `(80,52)` with 49 training ages.
+- `Day_29/notes.md`: **1,617 lines / 54,312 bytes / 7,854 words**; 152 fences; 36 math items (18 display, 18 inline); 0 KaTeX errors. Covers all five notebooks, manual workflow `0.8100558659217877`, pipeline `0.6759776536312849`, CV `0.6263862897665715`, GridSearch tie, manual-inference crash, and pipeline export. The pipeline's `trf2` selects `[1,6]` after `trf1`, encoding `Embarked` and `Fare` rather than `Sex` and `Embarked`; `trf3` keeps only the first 10 columns. Saved manual pickles have `drop_idx_=[0]` and `n_features_in_=8`, inconsistent with the visible 10-column manual run.
+- `Day_30/notes.md`: **1,375 lines / 50,209 bytes / 7,315 words**; 86 fences; 38 math items (13 display, 25 inline); 0 KaTeX errors. Covers normality checks, `log1p`, `FunctionTransformer`, selective routing, holdout/CV scores, the sine negative result, and preserved bugs. `my_notebook.ipynb` has no stored outputs and its cell 70 is malformed; the executed preview supplies the saved scores and the working `apply_transform` helper.
+- All six READMEs now list actual files, datasets, dependencies, run order, and preserved-bug caveats. No duplicate notes files were created.
+- Validation: `check_notes.py` reports balanced fences and no raw LaTeX delimiters; `extract_math.py` + KaTeX render every math item with 0 errors. Reproduced checks were labeled supplementary; saved notebook values were not replaced.
+
 ## Day 41 theory-only notes (2026-11-06)
 
 `Day_41/notes.md` was created at the user's explicit request from the YouTube class `https://youtu.be/Lln1PKgGr_M` (“What are Outliers | Outliers in Machine Learning”, CampusX, 17:07). This is an exception to the no-new-day-folder policy: the vendor repository has no Day 41, and this day has no official notebook or dataset.
@@ -442,14 +455,15 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 25. [x] `Day_22/notes.md` Day 39-standard rewrite: 1,784 lines, 57 math items render, all four notebooks and both report generations covered, README updated
 26. [x] `Day_24/notes.md` Day 39-standard rewrite: 2,744 lines, 268 math items render, official/personal notebooks and saved-state caveat covered, README updated
 27. [x] `Day_41/notes.md` theory-only supplement: 1,647 lines, 127 math items render, YouTube transcript used, no notebook/dataset, README added
-28. [ ] Day 37+ deep notes and remaining scaffolded days
+28. [x] `Day_25`–`Day_30` Day 39-standard rewrite: six notes files and READMEs updated; 243 math items render with 0 KaTeX errors; preserved notebook bugs and saved-output caveats documented
+29. [ ] Day 37+ deep notes and remaining scaffolded days
 
 ---
 
 ## Remaining (next unfinished first)
 
 1. **Verification pass** — confirm every restored notebook opens, matches its source (or documented improvement), and that README inventory matches disk.
-2. **Pedagogical rewrite of existing notes** — `Day_39` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `Day_23`, `Day_24`, `DAY_31`, and `DAY_32` are rewritten and validated. `Day_41` is a validated theory-only supplement. Next rewrite Days 25–30, then Days 33–38/40, 42–45/47–49, 50–53, and 55–56 using the two-layer, explanation-first standard. Course expansion remains paused except for explicit user requests.
+2. **Pedagogical rewrite of existing notes** — `Day_39` is the approved standard; `Day_16`–`Day_30`, `DAY_31`, and `DAY_32` are rewritten and validated. `Day_41` is a validated theory-only supplement. Next rewrite Days 33–38/40, 42–45/47–49, 50–53, and 55–56 using the two-layer, explanation-first standard. Course expansion remains paused except for explicit user requests.
 3. **Notebook polish** — meaningful headings + short what/why + useful code comments, preserving implementations. Day 32 has local typos and duplicated draft markdown to address later; do not rewrite the working code.
 4. **Future day notes** — after the existing-note rewrite is complete, resume Day 37+ only under the approved standard; inspect each personal notebook against its official source before editing.
 5. **Persist the master-notes standard** — the approved pedagogical pilot and Day 31/32 depth exemplars become the writing standard; add it to `AGENT_STYLE/` once the user approves it (the verbatim prompt is not stored in the repo).
@@ -458,7 +472,7 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 
 ## Exact next action
 
-> Rewrite Days 25–30 next using the approved Day 39 two-layer standard: Part A must be sufficient on its own, Part B optional; preserve all technical depth, formulas, notebook results, source-fidelity notes, and interview/exam coverage; rewrite in place; validate fences, tables, Mermaid, and KaTeX; update each README and this progress file. Do not resume course expansion except for explicit user requests.
+> Rewrite Days 33–38 and 40 next using the approved Day 39 two-layer standard: Part A must be sufficient on its own, Part B optional; preserve all technical depth, formulas, notebook results, source-fidelity notes, and interview/exam coverage; rewrite in place; validate fences, tables, Mermaid, and KaTeX; update each README and this progress file. Then continue with Days 42–45/47–49, 50–53, and 55–56. Do not resume course expansion except for explicit user requests.
 
 ---
 
