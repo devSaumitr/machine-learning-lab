@@ -1,0 +1,286 @@
+[00:00] Hi guys, welcome to my YouTube channel.
+[00:02] So, we are doing feature engineering
+[00:04] and we've done quite a lot of things.
+[00:06] Now, in the next two videos, we are
+[00:08] going to do something a little
+[00:09] different. So in this video, we are
+[00:12] going to discuss how we can handle
+[00:14] mixed variables. What are mixed
+[00:16] variables? I will discuss that in a
+[00:17] little while. And in the next video, we
+[00:20] are going to handle date and time
+[00:22] columns. Okay? So these are both
+[00:24] slightly different types of topics.
+[00:26] Everything we were studying until now
+[00:27] involved learning multiple things
+[00:29] within one topic. These were two
+[00:30] separate topics. So I am covering them
+[00:32] together. So let's start today's video.
+[00:36] So yeah, as I told you, in today's
+[00:38] video, we are going to learn how you
+[00:40] can feature engineer mixed data. So
+[00:43] what is mixed data? So in machine
+[00:46] learning, whenever you get real-world
+[00:50] data, sometimes if you are unlucky, you
+[00:53] get mixed data. What does mixed data
+[00:56] mean? It means that your column has
+[00:59] both numerical and categorical data.
+[01:02] Okay? And handling this kind of data is
+[01:05] a real headache. Because you don't
+[01:08] understand how to proceed. Okay? So
+[01:10] first, let me tell you how many ways
+[01:12] you can encounter this data. The first
+[01:15] way is that you have a single column.
+[01:18] For example, let me give you the
+[01:21] Titanic dataset example. There is a
+[01:23] column called Cabin. Okay? Now, the
+[01:27] Cabin column has values like this. B5,
+[01:30] C23, uh, D41. Now here, if you can see,
+[01:36] these aren't categories because there
+[01:38] would be way too many categories. If
+[01:41] you assume this is categorical data,
+[01:43] the problem here is that information is
+[01:46] hidden in two things: B and 5. In fact,
+[01:49] if you have traveled on Indian Railways
+[01:51] , you would know that bogey names are
+[01:53] like this too; so these two pieces of
+[01:54] information are together. Right, first
+[01:57] is B class and it's the fifth bogey or
+[02:01] cabin. Okay? So this became categorical
+[02:05] data, and this became our numerical
+[02:08] data. Okay? So the logic is very simple
+[02:11] . If you ever encounter such data, you
+[02:14] have to split it into two different
+[02:15] columns. One in which you store the
+[02:19] categorical information: B, C, D. And
+[02:23] the other where you store the numerical
+[02:26] information: 5, 23, and 41. So this was
+[02:31] the first way. The first type when a
+[02:33] mixed variable can cause you trouble.
+[02:35] Another way I have seen is that
+[02:37] sometimes you have a single column and
+[02:40] the values are like this Like this. Now
+[02:48] this is also very hectic. Meaning some
+[02:52] values in it are numeric and some
+[02:55] values are categorical. Okay? So in
+[02:59] such a scenario, what you should do is
+[03:01] create two columns again. One should be
+[03:04] for numerical and one should be for
+[03:06] categorical. Okay? And how will you
+[03:09] split it? Here it will be 7 3 1 and
+[03:13] here it will be NA NA NA, okay? After
+[03:18] that, here it will be NA NA but its
+[03:22] corresponding value here will be A and
+[03:26] C. Okay? After that, again for the
+[03:28] numerical one, I am writing at the top
+[03:30] at the end. Here it will be four and
+[03:32] here it will be NA in categorical. Here
+[03:35] it will be NA and here it will be D,
+[03:38] this one. Okay? So basically the logic
+[03:41] is very simple that wherever a
+[03:42] numerical value is present, let it be
+[03:44] in the numerical column and put its
+[03:45] corresponding NA in the categorical one
+[03:47] . Okay? Missing value, and do exactly
+[03:50] the opposite for the categorical one.
+[03:52] These are the two techniques I am going
+[03:53] to show you in today's video. You
+[03:55] probably won't find anything outside of
+[03:57] this. If you do, then you are unlucky.
+[04:00] You will have to understand the data
+[04:03] yourself and act accordingly. But
+[04:05] mostly, as far as I have seen, this is
+[04:07] how you find missing or mixed data and
+[04:09] these are the two techniques to handle
+[04:12] them. Okay? So what I will do is I will
+[04:14] quickly show you, I have created some
+[04:16] data myself. By making some changes to
+[04:18] the Titanic dataset. I will show you
+[04:20] how to run both these techniques on
+[04:22] that. Okay? So let's start with the
+[04:23] coding part. So here is our notebook.
+[04:27] Here in the notebook, I have imported
+[04:30] all the libraries. And I have created a
+[04:32] dataset myself. Actually, I took some
+[04:35] Titanic data. I added some data myself
+[04:37] to create an example. And here is my
+[04:40] data, guys. So here there are four
+[04:42] columns. One is Cabin, one is Ticket,
+[04:45] one is Number, and one is Survived,
+[04:47] which is my output column. So if you
+[04:50] notice Cabin, this is the column where
+[04:52] you are getting numerical and
+[04:54] categorical in a single cell, and it is
+[04:56] exactly the same for Ticket. Okay? And
+[04:59] this number column is basically how
+[05:01] many people that passenger was
+[05:03] traveling with. So the first passenger
+[05:05] was traveling with five people. The
+[05:07] second with three people, next with six
+[05:09] people. And this last guy here was
+[05:12] traveling alone. So what's in this data
+[05:14] ? Whoever created the data, in this
+[05:17] case I created it, marked it as alone.
+[05:20] Meaning alone is represented separately
+[05:22] because he thinks it's a different
+[05:24] thing. It's a different category, so he
+[05:26] represented it separately. Although I
+[05:28] created this example intentionally. You
+[05:30] might not see this, but I created it to
+[05:33] prove my point. Okay? Now I will show
+[05:35] you how to work on this data, the one
+[05:38] with 'alone'. Okay? So if I applied
+[05:40] unique first, these are the unique
+[05:43] values present in this column. A, 1, 2,
+[05:48] 3, 4, 5, and 6. Okay? Now what did I do
+[05:53] ? I plotted it once to show how many
+[05:56] times each category appeared. So the
+[05:59] most are traveling alone. After that,
+[06:01] with six people, with one, with two,
+[06:03] with four, and so on. Obviously, this
+[06:05] is a toy dataset. The logic here
+[06:07] doesn't really matter. So whenever you
+[06:10] find data like this where a single
+[06:12] column has both numerical and
+[06:13] categorical data. But both are not in a
+[06:16] single cell. So what should you do?
+[06:18] First, create a new column called
+[06:20] numerical. Okay? And what should you do
+[06:22] in it? You should call the
+[06:24] pd.to_numeric function and pass your
+[06:26] original column. Coerce the errors and
+[06:29] downcast to integer. Okay? Okay? This
+[06:32] is a simple piece of code. You can use
+[06:33] it again and again. And if you run this
+[06:36] code, what happens? I'll explain in a
+[06:39] moment. And after that, you are
+[06:40] creating a second column called
+[06:42] number_categorical where you are
+[06:43] writing this logic. np.where, wherever
+[06:47] the numerical one is null, I am
+[06:50] replacing it with NaN. That's it. Okay?
+[06:54] And now if I did df.head (), you can
+[06:57] see my number column has split into two
+[07:00] new columns. Wherever it's five, five
+[07:03] came here. n came here. Since it was
+[07:06] three, three came in number, and n came
+[07:08] here. And since it was 'a' here, you
+[07:11] can see now numerical is NaN and
+[07:13] categorical is 'a'. Exactly the same
+[07:15] thing we discussed a little while ago.
+[07:18] So this is what we created. All right?
+[07:20] So that is how you handle this kind of
+[07:22] thing. Okay? Now let's quickly see how
+[07:26] we can handle the cabin column and the
+[07:29] ticket column that we have. All right?
+[07:32] So first, if we talk about cabin, when
+[07:34] I applied unique to cabin, you can see
+[07:37] there are so many unique values here.
+[07:39] So obviously, you cannot work with so
+[07:41] many categories. And similarly, when I
+[07:44] applied unique to ticket, there are
+[07:46] even more categories here. Basically,
+[07:49] even more unique values for the ticket.
+[07:51] All right? So now we need to handle
+[07:52] this. So first, I applied logic to the
+[07:54] cabin. What did I do in cabin? I
+[07:56] created a new column named cabin_num
+[08:00] and I did string dot extract. I sent
+[08:03] this regular expression which captures
+[08:06] the numeric part of your data. All
+[08:09] right? So whatever numeric part is in
+[08:12] your cabin, like 85 in C85, that will
+[08:14] be picked up and go into the num column
+[08:16] . All right? And similarly, I created
+[08:19] cabin_cat where I am just taking index
+[08:21] zero of the string. All right? And as
+[08:24] soon as I run both of these, you can
+[08:26] see my work is done. And if you look
+[08:29] here, in cabin_num, where there are
+[08:31] null values, nothing can be done.
+[08:34] Nothing can be done there now. One more
+[08:36] thing guys, I forgot to tell you one
+[08:37] thing. Here, once we have created these
+[08:40] two columns, what can you do? You can
+[08:42] fill the missing values. What can you
+[08:44] do? Wherever there is NaN in the
+[08:46] numerical one, you can represent it
+[08:49] with zero because zero people were
+[08:51] traveling with the person, and wherever
+[08:53] it is categorical, instead of NaN, you
+[08:56] can write 'Not' or 'Missing'; you can
+[08:58] put any value there, all right. So now
+[09:01] if I come down, this is what I created;
+[09:04] for example, look at this value 'C85',
+[09:07] so 'C' came into the cabin category and
+[09:09] '85' came into the cabin number.
+[09:12] Similarly, if you talk about C123, then
+[09:15] C came into the cabin category and your
+[09:17] cabin number 123 came. Now the good
+[09:20] part is that after doing this, you will
+[09:22] have proper categories left. So if you
+[09:26] write cabin_cat.value_counts and run it
+[09:30] , you would see that we only have these
+[09:34] many categories now. Okay? Which were
+[09:38] many more categories earlier. If I plot
+[09:41] this, you would see that I need kind =
+[09:46] 'bar'. Here is the line plot. So you
+[09:52] can see that the most people are in the
+[09:55] C cabin. Okay? After that B, then D,
+[09:58] and so on. Okay? So now you can process
+[10:00] this entire information a little bit
+[10:02] more. Right? We will do the same work
+[10:04] with the ticket as well. You have to
+[10:06] apply almost the same logic to the
+[10:07] ticket one. It is a little more
+[10:09] difficult here. If you want, you can
+[10:11] take this code and look at it. Honestly
+[10:13] , I am not explaining the code here
+[10:15] because this all comes under Pandas. I
+[10:17] just want to show you the logic. So I
+[10:19] have just applied the same to_numeric
+[10:21] logic here, and the logic is exactly
+[10:23] the same as the one above. If you
+[10:26] download the code and try to run it
+[10:27] yourself to understand it. You will be
+[10:29] able to understand it better. When I
+[10:31] applied the same logic, if you notice
+[10:34] at the end, two new columns were
+[10:36] created. Ticket_num and Ticket_cat.
+[10:40] Okay? So here is my ticket. So what is
+[10:42] happening now? This first part went
+[10:44] into the category. And this numerical
+[10:47] part came into your numerical column.
+[10:50] Okay? And that is how you do it. Okay?
+[10:52] I will summarize it once quickly. You
+[10:55] will get mixed data in two ways. One
+[10:57] way is that you will have numbers and
+[11:00] categories together in a single cell.
+[11:04] So you have to break it into two
+[11:06] columns. Category separate, number
+[11:08] separate. Okay? And the second will be
+[11:11] that you have both numeric and
+[11:13] categorical data in the same column but
+[11:15] not together. It will be one below the
+[11:17] other. Okay? So in that case too, you
+[11:19] have to break it into two. But there
+[11:21] will always be an 'na' value in one of
+[11:23] them. Okay? So these are the two ways,
+[11:26] and these are the two ways mixed data
+[11:28] can trouble you. But if you understood
+[11:31] these codes, or even if you didn't,
+[11:33] just keep them in your library so that
+[11:35] whenever you see any such problem, you
+[11:37] can use this code immediately, and then
+[11:39] you won't have any issues. Okay? So
+[11:42] that was a small point. Today's video
+[11:45] is short and we discussed a very small
+[11:47] topic, and tomorrow we will also do a
+[11:49] little bit of work on date and time.
+[11:52] But yeah, these two are also important
+[11:54] things. Because trust me, I have spent
+[11:57] a lot of time trying to avoid these two
+[11:59] things, you know, and it is very
+[12:00] irritating. So I hope you understood
+[12:04] well how to handle this. So yeah,
+[12:07] that's it. Thanks for watching. Bye.

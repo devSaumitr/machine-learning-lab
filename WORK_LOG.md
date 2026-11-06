@@ -91,3 +91,18 @@ Owner: automated organizer (Muse Spark). Source of truth: actual files + playlis
 
 - Found new user work: a 29-cell executed FunctionTransformer notebook (normality checks, log1p, model comparison, `apply_transform` helper, 15 outputs) saved at the stale `05-Feature-Engineering-Intro/notebooks/` path. Sources identical to the Day_30 copy, which lacked outputs — consolidated the executed copy into `Day_30/`, removed the duplicate (old path now empty), updated Day_30 banner/README + root README + progress tracker (Day 30: studied with code, notes pending). No user work lost.
 - Added `.gitignore` (`.venv/`, `.venv312/`, caches) — ~1.3 GB of environments excluded from version control.
+
+## Session 5: Day-24 documented copy (2026-10-14)
+
+- Read all 53 cells incl. outputs. Headline finding: the notebook's own outputs contradict its narrative — LogReg scored 0.8642 unscaled vs 0.8519 scaled (70/81 vs 69/81: exactly one test row = noise), Tree tied exactly at 0.8375. Documented copy (`Day_24/DAY24_Standardization_documented.ipynb`, 105 cells) explains every cell spaciously with zero trivial-syntax lectures, interprets outputs honestly, and corrects the narrative instead of repeating the slogan. No code bugs needed fixing (commented-out demo lines preserved and explained). Original preserved byte-identical; attachment kept; all code `ast`-parses.
+- Patched stale "LogReg improves scaled" claims in Day-24 notes/README and the progress tracker to the honest one-row reading.
+
+## Session 6: gap-closing + strict notebook validation (2026-10-23)
+
+- Re-inventoried the repo (post-session-5 state): 27 notebooks across Day_16..Day_30, 15 `topic_notes.md`, root README + 15 day READMEs, tracker and this log. 33 markdown files, 0 broken relative links (re-checked after edits).
+- Deleted the two emptied leftover folders `05-Feature-Engineering-Intro/` and `07-Encoding-Categorical-Data/` (editor lock from earlier sessions no longer held; zero files inside).
+- `Day_21` notebook: appended the missing `Key takeaways (Day 21)` outro (1 markdown cell; 25 -> 26 cells; code untouched) — it was the only documented notebook without a takeaways ending.
+- `Day_23` notebook: replaced the leftover working-note first cell ("markdown checklist, no code yet - zero implementation") with a proper DOC-BANNER header carrying the same message; removed 1 empty markdown cell (10 -> 9 cells). Fixed the stale cell-count line in `Day_23/topic_notes.md`.
+- Strict nbformat validation: 32 cells had `"id": null` (hard validation errors) and 234 cells had no `id` key at all (warnings). All now carry unique 8-hex ids; all 27 notebooks validate against nbformat 4.5 with zero warnings. Metadata-only changes; cell order, code, and outputs preserved (per-notebook cell/code counts re-verified against the pre-edit scan).
+- Verified (not assumed) the previously flagged issues: Day-24/25 score cells now print real numbers (no `null` outputs anywhere in the repo — full output scan); Day-30 note numbers are exact roundings of the notebook's actual outputs (spot-checked 0.72067/0.68156/0.70949/0.61845/0.71508/0.66794/0.73743/0.67700/0.66210); both `titanic_report.html` copies (root + Day_22, different hashes) still end at `</script>` without closing tags = truncated; `eda_report.html` is complete.
+- Docs updated to match reality: root README (Day-24 scores recorded, Day-30 status, beyond-Video-29 line), `Day_30/README.md` title (notes written), `LEARNING_PROGRESS.md` (documented copies linked for Days 24/30, Day-30 notes reviewed, priorities rewritten, `nomialencoding.py` path corrected). No notebook code or outputs were executed or altered in this session.

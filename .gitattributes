@@ -1,0 +1,14 @@
+# Keep binary learning artifacts byte-exact on Windows checkouts.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.pkl binary
+*.sqlite binary
+*.db binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

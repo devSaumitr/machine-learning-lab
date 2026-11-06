@@ -1,0 +1,426 @@
+[00:00] Hello guys, welcome to my YouTube
+[00:02] channel. We have been learning how to
+[00:04] handle missing values for the last four
+[00:06] or five videos. And in the last video,
+[00:09] we started multivariate imputation with
+[00:12] KNN imputer. Today, we will cover a
+[00:15] very important topic under the same
+[00:18] umbrella: multivariate imputation. It's
+[00:21] called Iterative Imputer, or it is also
+[00:24] known as MICE. Its underlying algorithm
+[00:27] is also referred to as MICE. Okay? So,
+[00:29] this is a very popular strategy for
+[00:32] filling missing values, and we will
+[00:34] look at it in great detail. There is a
+[00:37] request: the video might seem a bit
+[00:39] difficult to you because there are
+[00:41] multiple steps involved. So, I have
+[00:45] worked quite hard so that I can explain
+[00:47] it to you well. I am just hoping that
+[00:50] you will understand it. So, I will
+[00:51] share my screen, and let's start the
+[00:53] video. So guys, the algorithm we are
+[00:57] going to do is called MICE, and its
+[01:00] full form is Multivariate Imputation by
+[01:03] Chained Equations; it's a very famous
+[01:07] approach for filling missing values,
+[01:10] which we will study in detail. I have
+[01:14] actually prepared a whole slide sort of
+[01:17] thing. But before that, I will just
+[01:19] give you some overview. The overview is
+[01:24] that you only use MICE under certain
+[01:28] assumptions. Okay? When? Apparently, I
+[01:32] might not have discussed this with you.
+[01:36] There are three categories of missing
+[01:38] data, out of which one is Missing
+[01:40] Completely At Random. Another one is
+[01:44] Missing At Random. And one is Missing
+[01:50] Not At Random. These are three
+[01:53] different ways in which data can be
+[01:55] missing within your data. Missing
+[01:59] Completely At Random means that even if
+[02:02] you want to, you know, there is no
+[02:05] reason. Meaning, your data just wasn't
+[02:08] collected. This means that wherever you
+[02:11] are getting the data from, for some
+[02:13] certain rows, the data collection just
+[02:16] didn't happen. It could be anything.
+[02:18] Okay? It could be any reason. That is
+[02:21] called Missing Completely At Random. In
+[02:25] Missing At Random, what happens is that
+[02:27] from the source where you are
+[02:29] collecting the data, some people
+[02:32] optionally didn't fill things in. For
+[02:36] example, you didn't fill in your weight
+[02:38] or didn't fill in your age because you
+[02:40] were feeling conscious or you didn't
+[02:42] want to disclose it. So, the assumption
+[02:45] here in Missing At Random is that your
+[02:48] missing value can be filled through the
+[02:51] values of the other columns. Meaning,
+[02:54] there is a relation. Okay? In Missing
+[02:57] Completely At Random, you don't do that
+[02:59] . And in Missing Not At Random, the
+[03:02] data has been removed intentionally.
+[03:06] Meaning, it simply implies that data
+[03:08] was removed deliberately, and there
+[03:10] isn't much relationship between your
+[03:12] other columns and the missing column,
+[03:14] so you cannot predict it. So, the
+[03:18] assumption is that you use MICE when
+[03:21] you are sure that the data you have is
+[03:24] Missing At Random, meaning you can use
+[03:27] the other columns to predict the value
+[03:30] of the missing column. So this is an
+[03:34] assumption; you can try it anywhere,
+[03:36] but you will get better results on
+[03:38] Missing At Random. Okay? What is the
+[03:41] advantage of this technique? It's quite
+[03:44] accurate. Meaning, its performance is
+[03:47] very good, and its disadvantage is that
+[03:51] it becomes slow because what are you
+[03:53] doing? You are actually trying to
+[03:56] predict the value of the missing values
+[03:59] using a machine learning algorithm. So,
+[04:01] this becomes a disadvantage. And
+[04:03] another disadvantage is that you have
+[04:05] to keep your entire training set on the
+[04:07] server. Because if any missing data
+[04:09] comes to the server, the prediction
+[04:11] will be based on that training data.
+[04:13] Okay? So these are the two
+[04:15] disadvantages. It gets a bit slow, as
+[04:17] in there is a speed problem and also a
+[04:19] memory problem. So, it is a bit
+[04:21] problematic to work on large datasets.
+[04:23] The speed can be slow. But it is quite
+[04:26] accurate. Okay? Now what will I do? I
+[04:29] will try to explain to you in great
+[04:31] detail and very calmly how this
+[04:33] algorithm works. Okay? So, let's start.
+[04:39] So, for this particular explanation, I
+[04:42] have picked a dataset. This is the
+[04:46] dataset. I found this on Kaggle. And
+[04:49] there are four columns here. Basically,
+[04:52] this is a startup dataset regarding how
+[04:55] much a startup is spending on its R&D.
+[04:57] How much they are spending on
+[04:59] administration, how much on marketing,
+[05:01] and how much profit they are generating
+[05:02] . So, it's a regression problem. Now,
+[05:05] what did I do? Since we had to
+[05:08] implement MICE. So, you always
+[05:10] implement MICE on input columns only.
+[05:13] And here, these are the only input
+[05:15] columns. So, I removed this column.
+[05:20] Okay? So, you will see here that after
+[05:24] removing the target column, the data I
+[05:27] have looks like this. Now, I have only
+[05:31] taken five rows. There were more rows
+[05:33] in this. I guess there were 50 rows.
+[05:35] But I have randomly taken five rows.
+[05:37] Just to show you the concept. Since I
+[05:39] was doing this step-by-step, I wouldn't
+[05:41] have been able to show it if there were
+[05:42] more rows. So anyway, we have this
+[05:45] dataset with five rows and three
+[05:47] columns. Now, what did I do? I
+[05:49] deliberately removed some values from
+[05:52] it. All right? I removed some missing
+[05:54] values. For example, as you can see
+[05:58] here, I removed this value. I removed
+[06:02] this value, and I removed this value.
+[06:06] So finally, the dataset I have is this
+[06:09] one, which has five rows, three columns
+[06:12] , and three missing values. There is
+[06:14] one missing value in each column. Now,
+[06:16] I need to predict these missing values
+[06:20] using our algorithm. All right? How
+[06:23] will you do it? You have to do it step
+[06:25] by step. In the very first step, what
+[06:28] you do is replace all your NaN values
+[06:32] with the mean. The mean of what? The
+[06:35] mean of their respective columns. All
+[06:37] right? So here, you can see, where did
+[06:40] this 9.25 come from? It is basically
+[06:43] the mean value of this column.
+[06:45] Similarly, where did this 11.25 come
+[06:47] from? It is the mean value of this
+[06:49] column, and this 29.25 is the mean
+[06:52] value of this column. So when you start
+[06:54] , you replace all your missing values
+[06:57] with the mean of that same column. That
+[07:00] is step one. All right? Now comes step
+[07:03] two. In step two, what you do is move
+[07:06] from left to right. You move from left
+[07:09] to right through your columns. And
+[07:12] first of all, what you do is that in
+[07:14] your first column on the left—in this
+[07:17] case, the R&D Spend column—wherever
+[07:19] the values were missing, you replace
+[07:21] them back with NaN values. Just like
+[07:25] you replaced it with the mean of this
+[07:27] value above. Now you are replacing it
+[07:30] back with NaN. Why did you do that?
+[07:32] Because now you will predict it using
+[07:34] your algorithm. The other two values
+[07:37] remained exactly as they were. This has
+[07:39] become NaN again. All right? Now, here
+[07:42] is the main thing. Here, what you do is
+[07:45] apply an algorithm. Any algorithm—
+[07:48] Linear Regression, Decision Tree,
+[07:50] Random Forest—you can apply any
+[07:52] algorithm. So now what happens is that
+[07:55] this row, this row where the missing
+[07:57] value is, you will make a prediction
+[08:00] here. So all the remaining rows will
+[08:02] become your training data. So, these
+[08:06] red boxes that you see, when combined,
+[08:09] become my training input, and these
+[08:12] blue boxes that you see become my
+[08:15] output. Okay? So you can see
+[08:19] Administration and Marketing spend, and
+[08:23] these 1530, 1530, 1041, 1041, 11, 26,
+[08:27] 15—this is my input for my algorithm.
+[08:32] I have used Linear Regression. You can
+[08:34] use any other algorithm as well. This
+[08:36] becomes my X. It becomes the input.
+[08:38] Okay? And this blue part becomes the
+[08:40] corresponding output. So this whole
+[08:43] thing becomes capital X and all this
+[08:45] blue stuff becomes Y. Now I have
+[08:47] trained the machine learning model.
+[08:50] Okay? So the machine learning model has
+[08:52] been trained on this data. Now I will
+[08:53] give it a new input. Which is this guy,
+[08:56] five and 20. And I will get a
+[08:59] prediction for this, and that
+[09:01] prediction comes out to be 23.14. I
+[09:05] hope you are understanding this. So,
+[09:07] what did we do first? We replaced all
+[09:09] missing values with the column's mean
+[09:12] value. After that, we took the first
+[09:14] column from the left. Wherever there
+[09:16] were missing values, we made them
+[09:17] missing again. And using the rest of
+[09:20] the data, we trained a model. And for
+[09:23] the rows where values were missing, I
+[09:25] predicted those missing values by using
+[09:28] the other columns as input. This is
+[09:30] what I have done so far. Now I will
+[09:32] move from left to right. And now in the
+[09:35] next step, this same data will go down
+[09:38] here. I will show you. This same data
+[09:41] will move down. As you can see, this
+[09:43] same data has moved down. And now in
+[09:45] this second column, I am making this
+[09:48] value missing again because it was a
+[09:51] missing value initially. Okay? So now
+[09:54] you can understand again that your
+[09:57] input is this. The red boxes, these red
+[10:00] boxes, have become your input. And
+[10:03] these blue boxes have become your
+[10:06] output. So this whole thing became X
+[10:09] and this became Y. Again, I trained the
+[10:11] same Linear Regression algorithm. Okay?
+[10:14] And my model is trained. Now what did I
+[10:17] do? I gave this input. These two were
+[10:19] the inputs. And by giving these two
+[10:21] inputs, the prediction that came now is
+[10:24] 11.06. So now I have predicted all the
+[10:27] values of the second row. Again, I will
+[10:30] go from left to right and now I will
+[10:32] move to my third column, and I have
+[10:35] filled everything in my third column.
+[10:37] You can see here this is 2.34, which
+[10:40] came from the prediction, and 11.06,
+[10:42] which again came from the prediction.
+[10:46] Now I have made this value missing,
+[10:48] meaning I removed it, because if you
+[10:50] remember the dataset, you should recall
+[10:53] that these three values were missing in
+[10:56] the beginning—this one, this one, and
+[10:59] this one, right? So now it's the last
+[11:02] column's turn. So now here you can
+[11:05] clearly see that this red box is my
+[11:07] input, as in this is X, this is X, and
+[11:10] this is Y, and I gave this to the
+[11:13] linear regression model and trained it.
+[11:16] And this became my X-test, which, when
+[11:20] provided, resulted in this prediction
+[11:23] of 31.56, and I put it here. Now my
+[11:27] stage one is complete. The first stage
+[11:29] is complete. Actually, what was the
+[11:31] zeroth stage? Replacing all the values
+[11:33] with mean values. What did we do in
+[11:35] stage one? Predicted all the values
+[11:38] through an algorithm. And this is the
+[11:40] end of stage one. This is stage one. So
+[11:43] after stage one, I don't have any
+[11:45] missing values in my dataset, but the
+[11:47] work doesn't end here. You keep
+[11:49] repeating this same task again and
+[11:52] again. How? Let me show you. So if you
+[11:54] pay attention, you will understand that
+[11:57] after iteration zero, which was the
+[12:00] first iteration. After that, my dataset
+[12:03] looked like this. Why did it look like
+[12:05] this? Because these are all mean values
+[12:08] . These are all mean values. And this
+[12:12] is after iteration one. So these
+[12:16] predictions that have been made are
+[12:18] through your linear regression model.
+[12:21] Right? So now what do you have to do?
+[12:23] You have to subtract iteration two from
+[12:26] your iteration one. You have to
+[12:28] subtract every value. So this value
+[12:30] will be subtracted from this. This
+[12:33] value will be subtracted from this. So
+[12:36] obviously, you will get a dataframe
+[12:38] where all the values that were already
+[12:40] available will become zero, and the
+[12:42] values you predicted will show some
+[12:44] numbers. So you can see 13.89 is
+[12:47] appearing here. -19 is appearing here,
+[12:50] and 2.31 is appearing here. So this
+[12:53] shows the difference between our two
+[12:55] approaches. One is the mean approach,
+[12:57] and one is the approach of predicting
+[12:59] using linear regression. Now listen
+[13:02] carefully. You keep doing this work in
+[13:05] repetition until this difference, these
+[13:09] values, all become zero or almost zero.
+[13:13] As you can see here, it is currently 13
+[13:15] , so there is quite a difference. Here
+[13:17] it is 2.31, so there is quite a
+[13:18] difference. So you need to keep doing
+[13:22] this inside a loop until these
+[13:25] differences become zero. Or you can
+[13:28] also run it for a fixed number of
+[13:30] iterations. 10, 15, 20, 100, but the
+[13:33] more iterations you run, the better
+[13:35] your missing values are predicted. Okay
+[13:38] ? So now what do you need to do again?
+[13:40] Now you will treat the dataset that
+[13:43] came out of this first iteration as
+[13:47] your base. Now you will consider this
+[13:49] as your base. And again, what will you
+[13:51] do first? You will first remove this
+[13:55] value, this value right here. You will
+[13:58] turn this into a None. Okay? Then you
+[14:01] will make a prediction using all the
+[14:03] others. Okay? Then similarly, you will
+[14:05] go from left to right. Then you will
+[14:07] remove this. Then you will make a
+[14:08] prediction for this. Then you will
+[14:10] remove this. You will make a prediction
+[14:12] for this. Now a question might come to
+[14:13] your mind: why are we doing this
+[14:15] repeatedly? Why not do it just once?
+[14:17] The reason for that, guys, is that when
+[14:20] we predict for the first time, we are
+[14:22] predicting with mean values, and those
+[14:24] values might be incorrect. So the whole
+[14:28] idea is that with every next prediction
+[14:30] , you want to get closer to the actual
+[14:32] value, and eventually, how do you know
+[14:34] you've gotten close? Your difference
+[14:36] becomes zero. It means your machine
+[14:38] learning model cannot make any further
+[14:40] improvements. So it says, "I think this
+[14:43] is the most accurate value." And that
+[14:45] is why you do this entire thing in
+[14:47] steps, like in iterations, and that is
+[14:49] why it is called iterative imputation.
+[14:51] So you can see that when I did this
+[14:53] same thing for the second time. When I
+[14:57] did the same thing for the second time,
+[15:00] look here, this was the result the
+[15:02] first time I applied linear regression.
+[15:06] These were the results. Then one by one
+[15:08] , I first predicted on this column.
+[15:10] Then I did it on this column. Then I
+[15:12] did it on this column, and look, my
+[15:14] results are coming out like this: 23.78
+[15:17] , 11.22, and this one came out exactly
+[15:20] the same, 31.56; this means when I
+[15:23] subtracted these two, this value became
+[15:26] zero. This value became 64. Look, this
+[15:29] value also decreased significantly.
+[15:30] This difference also moved closer to
+[15:31] zero. And this value also went towards
+[15:34] zero. It went from -19 to positive 166.
+[15:38] But you are getting close to zero. Okay
+[15:40] ? And now what will you do again? You
+[15:42] have realized this thing that you will
+[15:44] again take this second dataset as your
+[15:50] base and use it to do the third level
+[15:54] of prediction. So what will you do
+[15:57] again? In this dataset, from left to
+[15:59] right. First, make this none and make a
+[16:01] prediction here. Then make this none
+[16:03] and make a prediction here. Then make
+[16:06] this none and make a prediction here. I
+[16:08] did this too. So then these new values
+[16:11] came, guys, these are the new values.
+[16:15] These are the new values. And now when
+[16:18] I calculated the difference, it is
+[16:20] coming to 79, this is 155, and it
+[16:23] increased again and will increase. It
+[16:25] happens. It keeps fluctuating. Right
+[16:28] now, we have only run two iterations.
+[16:29] People run 100 iterations. So our end
+[16:32] goal is, I mean, what should you do?
+[16:34] Practice this whole thing and run it
+[16:37] for, I don't know, 10, 15, 20
+[16:38] iterations. And eventually, the end
+[16:41] goal should be that your actual values,
+[16:43] these actual values of yours, you have
+[16:46] to reach close to them. Right now, we
+[16:48] are not close to them at all. Because
+[16:49] we have only run two iterations. This
+[16:52] value is still a bit close. The 16 one.
+[16:54] This three and this four are completely
+[16:56] off right now. This is not coming out
+[16:58] right. But the 16 value, I guess, is
+[17:00] coming out okay. Here 11 is coming
+[17:02] instead of 16. So this is still
+[17:04] somewhat okay. This should have been
+[17:05] three here. This should have been four
+[17:07] here. Uh, this value should have been
+[17:09] four, but this is coming as 24. And
+[17:11] this should have been three. This is
+[17:12] coming as 45. So this is very off right
+[17:14] now. Because right now I only ran two
+[17:16] iterations. But if you keep running
+[17:17] more iterations. If you keep doing this
+[17:20] inside a loop. Now, keeping this
+[17:22] dataset as the base, you run the next
+[17:24] one. Then subtract. Then eventually you
+[17:27] will reach a position where your
+[17:29] differences will become equal to zero.
+[17:32] And after that, do the rest of the work
+[17:34] that you do, solve the problem by
+[17:36] applying a machine learning model,
+[17:38] calculate accuracy, etc., then you
+[17:40] would find that your results come out
+[17:42] better. Okay? So to help you, I will
+[17:45] share this notebook with you. This is
+[17:48] the same notebook. I have taken
+[17:50] snapshots from here and pasted them
+[17:53] there. So what can you do? Use this
+[17:55] notebook to build your intuition about
+[17:59] this algorithm. I have written it here.
+[18:02] Although I didn't add many comments
+[18:03] because I was in a bit of a rush. But I
+[18:05] have done everything here step by step.
+[18:08] You can extend this to three iterations
+[18:10] , or try five or ten iterations if you
+[18:13] want. If possible, write your own
+[18:15] program where you are doing this inside
+[18:17] a loop. Then you will start seeing the
+[18:19] results quickly. Alright? Now, what
+[18:22] will I do? I will quickly show you how
+[18:25] to use Iterative Imputer in
+[18:27] Scikit-learn. Okay? So let's start that
+[18:30] .

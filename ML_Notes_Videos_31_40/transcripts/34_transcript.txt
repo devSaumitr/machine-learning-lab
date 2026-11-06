@@ -1,0 +1,331 @@
+[00:00] Hello guys, welcome to my YouTube
+[00:02] channel. So we're still doing feature
+[00:04] engineering. In the last video, we
+[00:06] learned how to handle mixed variables
+[00:09] in a column—meaning, if you have a
+[00:12] column with a mix of alphabets and
+[00:14] numbers—in today's video, we're going
+[00:17] to discuss an even more important thing
+[00:20] : how to handle date and time-based
+[00:23] columns. Okay? So, there will be many
+[00:25] times in your machine learning journey
+[00:28] when you'll work with data sets where
+[00:30] the columns contain dates, times, or
+[00:33] both. That's what we're going to see in
+[00:35] this video. Okay? So, let's start our
+[00:37] discussion. So, to be honest, there
+[00:39] aren't any concepts in today's video.
+[00:41] It's basically a code walk-through
+[00:43] where I've written some code and
+[00:46] discussed all the functions you can use
+[00:50] to handle dates and times. That's what
+[00:52] we'll be studying. Okay? So, if you
+[00:54] have dates and times, these are very
+[00:57] useful columns because they often
+[00:59] contain hidden information. For example
+[01:03] , let's take an example: we have a
+[01:05] column containing a date. The date
+[01:08] could be something like August 23, 2012
+[01:12] , right? This is just one value in a
+[01:16] column, but there's a lot of hidden
+[01:18] information inside it. Like, what day
+[01:21] is the 23rd of the month? What month is
+[01:25] it? Is it August or the 12th month?
+[01:29] What year is it? Right? There are many
+[01:32] other hidden things, like what day is
+[01:34] it? Day of the week, meaning Monday,
+[01:38] Tuesday? What quarter is it in? What
+[01:43] semester is it? Right? What year is it
+[01:48] in? So, there's a lot of hidden
+[01:50] information like this. Is this date a
+[01:52] weekend or not? Right? So, these little
+[01:56] things help a lot. For example, I was
+[01:58] working on a project a few days ago. I
+[02:00] was building an expense tracker app
+[02:03] where we provided analysis of a user's
+[02:06] spending patterns. This date column
+[02:09] became a key element in the project,
+[02:11] because of the timeframe at which they
+[02:12] were spending. We needed to determine
+[02:15] whether they spent more on weekends or
+[02:18] weekdays, or whether they had higher
+[02:20] spending in which months. This kind of
+[02:23] information became a key element in
+[02:25] that project. That's what I'm talking
+[02:27] about: if you have a lot of variation
+[02:29] in date or time, for example, if you're
+[02:31] given a time, it's never going to be
+[02:38] 60. Let's say it's 40. Right? So, here
+[02:40] you have hour information, minute
+[02:43] information, and second information.
+[02:46] All this information, hidden within
+[02:49] these variables, becomes very useful
+[02:51] sometimes. And in today's video, we'll
+[02:53] look at how to extract these hidden
+[02:55] pieces of information, or how you can
+[02:58] extract things by subtracting two dates
+[03:00] . We'll cover all of these things in
+[03:02] today's video. Okay? Now, I'd like
+[03:04] today's video to be a reference
+[03:06] material for you, so that if you ever
+[03:09] encounter any date-or time-related
+[03:11] challenges in the future, you can come
+[03:14] back to this video and look at the code
+[03:17] or see how I handled things. Okay? So,
+[03:20] let's start with the coding part. So,
+[03:22] for today's video, I've taken two data
+[03:26] sets. One is called orders.csv and the
+[03:29] other is called messages.csv. So, all
+[03:31] the date-related work I'll do with the
+[03:34] orders.csv, and all the time-related
+[03:37] work I'll do with messages.csv. I'll
+[03:40] quickly run the sales. Here's a data
+[03:43] frame containing my orders. Here, I
+[03:47] have a data set from an e-commerce
+[03:49] website. We have a data set where which
+[03:52] product was sold how many times in
+[03:55] which city on which date. And along
+[03:57] with this, I've created another data
+[04:00] set. Not created, but actually taken
+[04:02] from Cadillac. The second is this. This
+[04:06] is a chatting data set. Okay? This is a
+[04:09] data set of users chatting on a website
+[04:13] or app. At what time stamp was that
+[04:16] message sent, and what was that message
+[04:18] ? Now, most likely, this is some
+[04:20] external website or chatting
+[04:21] application. So what's written here? I
+[04:23] don't understand. Okay? We're not even
+[04:25] interested in that. Okay? Now, we'll
+[04:28] focus on the date first. Okay? But
+[04:31] before that, I'd like to show you that
+[04:34] when you import a data set into Pandas,
+[04:37] the date and time columns are objects
+[04:41] by default, i.e., strings. So, if you
+[04:44] leave it as a string, you won't be able
+[04:46] to do anything with it that I'm going
+[04:47] to show you in that video. Your first
+[04:51] duty is to change its data type to
+[04:55] datetime. That's what I'm showing you
+[04:57] here. So, as soon as I typed "date.info
+[05:00] ," I could clearly see that the date
+[05:03] column is an object. "Object," meaning
+[05:06] I can't extract month, day, etc. from
+[05:08] it. I'll have to change it. Similarly,
+[05:11] when I typed "time" here, I'd see that
+[05:17] the date we have is again an object,
+[05:23] right? So, what do we do first? We have
+[05:26] to work with the date. So, what did I
+[05:28] do? I first wrote this code. I called
+[05:31] the "pd.2.datetime" function and passed
+[05:33] this column from the first data frame
+[05:36] and stored it back as the value of that
+[05:39] column. And after doing all that, as
+[05:41] soon as I typed "date.info" on top of
+[05:42] the first data frame, guys, please
+[05:44] don't get confused. My first data frame
+[05:46] is named date, on which I'll perform
+[05:47] all date-related tasks, and the second
+[05:49] is named time, on which I'll perform
+[05:51] all time-related tasks. So, for now,
+[05:53] we'll be working on dates for a while.
+[05:55] Okay? So here you can see. Now, as soon
+[05:58] as I typed date.info, my date column
+[06:01] has become a datetime object. Okay? So
+[06:04] now we can apply the functions I'm
+[06:06] about to use. Okay? So let's do it one
+[06:09] by one. First, I'll show you how you
+[06:12] can extract the year from a date. Okay?
+[06:15] It's very simple. You just type in the
+[06:17] name of your column. dt.dt means
+[06:20] datetime.year. And whatever information
+[06:23] comes in will be displayed as a Pandas
+[06:24] series. I put it in this column. And as
+[06:27] soon as I run this data frame, you can
+[06:29] see that I extracted the year from it
+[06:31] and created a new column. 2019, 2018.
+[06:34] If I sample here, you'll be able to
+[06:38] better see the results. So if I type "
+[06:41] five" here, or "mostly," I guess, there
+[06:44] are records for these two years. So we
+[06:48] can extract the year from the date.
+[06:50] Okay? Similarly, you can also extract
+[06:51] the month. It's very simple. This time,
+[06:53] we type dt dot month and run this code.
+[06:57] Look, if there's 12, it's 12. If
+[06:59] there's eight, it's eight. If there's
+[07:01] 10, it's 10. Okay? If you want the
+[07:04] month name, you just use this function
+[07:07] name instead of this attribute. "month"
+[07:10] underscore name brackets. Okay? And now
+[07:13] , look, I have another column. 12 means
+[07:16] December, 8 means August, and 1st means
+[07:19] January. Okay? Next, if we want to
+[07:22] extract which day of the month it was,
+[07:24] all you need to do is type dt dot day.
+[07:28] And here's your answer. Look, this is
+[07:31] the 10th day. This is the 15th day.
+[07:34] This is the 23rd. And so on. Okay? If
+[07:37] you want to find out which day of the
+[07:39] week that day is, you have to call this
+[07:42] attribute: dayofweek. So running this
+[07:45] gives you the 10th, which is the first
+[07:47] day of the week. This 17th, which is
+[07:50] the fifth day of the week. And this 6th
+[07:52] , which is the sixth day of the week.
+[07:54] Okay? If you want the day-of-the-week
+[07:57] name, like you're specifying here, you
+[07:59] just have to call the day underscore
+[08:01] name. Okay? And as soon as you call
+[08:04] this and run it, you find out that it
+[08:07] starts with Tuesday. I don't know why
+[08:10] it starts with Tuesday. Tuesday is
+[08:12] Wednesday, Tuesday is Saturday, Sunday
+[08:15] is sixth, Monday is seventh. Okay, fine
+[08:17] . It's okay. No problem. I thought it
+[08:19] would start with Monday. But here it's
+[08:21] starting on Tuesday. I'll have to check
+[08:23] the documentation once. But anyway,
+[08:25] there's no problem. Okay? As long as
+[08:27] it's uniform, there's no problem. Okay?
+[08:30] Next, you can also find out whether
+[08:32] that particular date falls on a weekend
+[08:35] or not. For that, you have to use a
+[08:37] little hack. You have to use this
+[08:39] function: is in Sunday and Saturday.
+[08:42] I'm applying it above the date-of-week
+[08:45] column, above this column. I'm checking
+[08:49] if this day is one of these two. And
+[08:52] then I'm applying np dot where. It's
+[08:54] very simple logic. If you know both
+[08:55] NumPy and Pandas, you'll understand
+[08:57] this logic perfectly. And when you run
+[09:00] this, see: Tuesday is zero, Wednesday
+[09:02] is zero, but Saturday and Sunday are
+[09:05] one. So, you can very easily find out
+[09:07] whether the date you're talking about
+[09:10] fell on a weekend or not. Okay? And
+[09:12] next is extract the week of the year.
+[09:14] So there are 52 or 53 weeks in a year.
+[09:18] You can extract the week number if you
+[09:20] want. So there's nothing to do. You
+[09:21] just have to type dt dot week. That's
+[09:23] it. And when you run this code, see
+[09:25] that this date, December 12, 2019, is
+[09:28] in week 50. Okay? Similarly, August 8,
+[09:32] 2018, falls in week 33. Okay? So you
+[09:36] can also extract the quarter. It's very
+[09:39] simple. You just have to type dt dot
+[09:42] quarter, and you get the quarter. So
+[09:45] the first date was December. C was
+[09:47] December, so the fourth quarter;
+[09:49] October is the fourth quarter; August
+[09:52] is the third quarter; January is the
+[09:54] first quarter. Okay? Similarly, using
+[09:57] the same logic, you can also extract
+[09:59] semesters. There are two semesters in a
+[10:01] year: first and second. This won't work
+[10:03] directly. Here, too, all you have to do
+[10:05] is apply the logic of "date quarter is
+[10:10] in one, two, and (MPWare), and you'll
+[10:12] have the semester at the end. So,
+[10:14] fourth quarter means your second
+[10:16] semester, first quarter means your
+[10:18] first semester. Okay? You can try this
+[10:21] too. Another important thing if you
+[10:24] ever need to extract the time elast
+[10:26] between two dates. Finding the gap
+[10:29] between two dates is very easy. What
+[10:31] did I do? I imported the date time
+[10:33] module and imported today's date. Okay?
+[10:36] Here's today's date: 2021 4 months =
+[10:40] April 21. Okay? So, now you don't have
+[10:45] to do anything. Just subtract your date
+[10:47] column from today and you'll get
+[10:49] everything. So here we see 498 days and
+[10:52] 16 hours 2 minutes 16 seconds and
+[10:54] whatever happens after that. Okay? This
+[10:57] works out for every date. Okay? If you
+[11:00] just want the days, you just need to
+[11:04] subtract dt dot dz from this difference
+[11:07] . And look, it's giving you the day.
+[11:11] Okay? Similarly, if you want to find
+[11:12] the month passed, you have to work a
+[11:14] little harder. What you have to do is
+[11:16] take today minus this and then divide
+[11:20] that by this. Okay? Now, at this point,
+[11:23] just remember that there's a function
+[11:25] called np dot time delta 64. You'll
+[11:28] input this and then round it down and
+[11:30] it'll give you the month. For example,
+[11:33] 16 months passed, 32 months, 30 months,
+[11:35] 20 months. Okay? So, similarly, you can
+[11:39] try other things here. Instead of" m, "
+[11:42] you can use" hours "to see how many
+[11:43] hours have passed, how many seconds
+[11:45] have passed. You can extract that from
+[11:47] it. I'll explain it to you in the next
+[11:48] section. Now let's discuss time. Let's
+[11:52] discuss time. So, we'll use a data
+[11:54] frame with seconds. Time is our data
+[11:56] frame. It contains two elements, date
+[11:58] and message. So, obviously, I don't
+[12:00] need this message column. I'll do all
+[12:02] the work on the date column. But here
+[12:04] too, the same problem arises: this date
+[12:06] is currently an object. I can quickly
+[12:08] show you that if I do info on it, you
+[12:10] can see that it is currently an object.
+[12:13] If it is an object, it's of no use to
+[12:14] me. So what did I do again? I passed my
+[12:16] column to pd dot 2 underscore date time
+[12:19] and put it back in the same column. And
+[12:21] when I ran this code, I do time dot
+[12:23] info and now this date time object has
+[12:26] been created. Okay? Now what you can do
+[12:29] is extract the hours, minutes, and
+[12:32] seconds from this given time using the
+[12:36] same syntax: dt.r dt.min dt.sec. And I
+[12:39] did that. And look, guys, I've
+[12:44] extracted all three from this time.
+[12:44] Okay? If you want, a given date and
+[12:47] time are both together. You can extract
+[12:50] just the time portion separately using
+[12:53] dt.time. I showed you how to do that
+[12:54] too. And you can see that this was my
+[12:56] complete date and time. Now I only have
+[12:58] the time. So, if you want to work with
+[13:01] just the time, you can apply this
+[13:02] processing. Similarly, you can find the
+[13:04] time difference. Same thing: today
+[13:07] minus time, date, this thing. Okay? If
+[13:11] you want to extract it in seconds, you
+[13:13] entered the month above in time delta
+[13:15] 64. You need to enter the seconds here.
+[13:17] Obviously, the seconds will be very
+[13:18] large. So this is 10 to the power of 8.
+[13:20] Too many seconds have passed. To get
+[13:22] the minutes, just plug in 'm' to the
+[13:25] time delta 64. Small 'm' for capital m
+[13:27] months, 'm' for minutes, okay? So this
+[13:30] is 10 to the power of six, and this 'h'
+[13:32] will give you the difference in hours,
+[13:35] which is in the thousands, okay? So,
+[13:37] that's it, that's all I needed to do.
+[13:40] You probably won't need more than this.
+[13:42] In a couple of places, you might need
+[13:44] to work with time zones, but it's very
+[13:47] rare. You can easily Google it, you'll
+[13:50] find the codes on the stick overflow.
+[13:52] Okay? So, what you can do is you can
+[13:54] just download this notebook. Give it a
+[13:56] try, and if you want to use it in an
+[13:59] existing project, use it. But this is
+[14:01] much more or less. That's all we need
+[14:03] to do to handle dates and times. This
+[14:05] was a small topic. So we're going to
+[14:07] get this over with quickly. Okay? So I
+[14:09] hope you like the video. If so, guys,
+[14:12] please consider subscribing and sharing
+[14:14] . So, that's it. Thanks for watching.
+[14:17] Bye.

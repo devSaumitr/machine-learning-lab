@@ -1,0 +1,514 @@
+[00:00] Hi guys, welcome to my YouTube channel.
+[00:03] We are learning how to impute missing
+[00:05] values, and we have seen univariate
+[00:08] imputation so far. In today's video, we
+[00:11] will discuss the first multivariate
+[00:14] imputation technique called KNN Imputer
+[00:17] . So let's start the video. So if you
+[00:20] don't know the difference between
+[00:22] univariate techniques and multivariate
+[00:25] techniques. I will quickly summarize.
+[00:27] So let's say you have data with
+[00:31] multiple columns, column one, two,
+[00:34] three, and four, and let's say there
+[00:38] are different rows like this, and in
+[00:42] the second row of the first column, a
+[00:46] value is missing. So in univariate
+[00:49] imputation, what you do is that when
+[00:52] you try to fill this value, you only
+[00:55] take help from this single column.
+[00:59] Right? This is what we call univariate
+[01:01] imputation. Such as calculating the
+[01:03] mean. So you calculate the mean of all
+[01:05] the remaining values and replace it, or
+[01:07] use a random value. You fill the
+[01:09] missing value with any random number
+[01:12] from the remaining values. That is
+[01:14] univariate imputation. What will you do
+[01:16] in the case of multivariate? You will
+[01:19] use these remaining rows and the data
+[01:22] of other columns as well to fill this
+[01:25] missing value, and that is the main
+[01:27] difference. Okay? Now there are various
+[01:31] techniques. We will discuss two in this
+[01:34] playlist. First, we will discuss KNN
+[01:37] Imputer, which we are studying in
+[01:39] today's video. And the second one we
+[01:43] will study in the next video, that
+[01:47] would be Iterative Imputer. Okay? So
+[01:51] let's now divert our attention to KNN
+[01:54] Imputer. Okay? So, yeah, just one
+[01:58] second, I will just set things up. Like
+[02:02] , let me bring this down a little bit.
+[02:05] This is the data we have, and this is
+[02:08] some text. I am bringing this down as
+[02:10] well. Yeah, so guys, KNN Imputer works
+[02:14] on this algorithm called KNN. Okay? You
+[02:19] will study KNN later, or most likely
+[02:21] you have already studied it. There is a
+[02:23] playlist on my channel about KNN. So
+[02:26] how KNN works is that the basic
+[02:29] fundamental of KNN is that you are like
+[02:32] your neighbors. That is the simple
+[02:34] principle. Okay? And all your behavior
+[02:38] and characteristics would be similar to
+[02:40] your neighbors. So if a value is
+[02:44] missing, you will fill this value with
+[02:48] the values from the row that is most
+[02:53] similar to your row. That is the whole
+[02:56] idea. Now, how is this similarity
+[02:58] calculated? Similarity is calculated
+[03:01] using Euclidean distances. At the end,
+[03:06] all these rows could be—I mean, they
+[03:11] can be treated as coordinates. I mean,
+[03:14] think about it, the first one is
+[03:16] actually a coordinate in a
+[03:17] four-dimensional system. Right? This is
+[03:22] a coordinate. Now, this value is
+[03:24] missing here. But suppose it wasn't
+[03:26] missing, there would be four numbers.
+[03:28] Four numbers could be part of a
+[03:29] four-dimensional coordinate system. Now
+[03:31] , obviously, I can't build a 4D system.
+[03:33] Let's say we build a 3D system instead.
+[03:35] In 3D, it would be here. Similarly, the
+[03:37] second one would be here, the third one
+[03:39] here, and the fourth one here. Now,
+[03:41] what you need to do is for any given
+[03:43] point, like when you are about to
+[03:46] impute this value. You want to fill it,
+[03:49] so you calculate the distance of row
+[03:52] number two from all other rows. And you
+[03:58] replace this value with the feature one
+[04:02] value of whichever row is closest. That
+[04:06] is how you do it. I hope you are
+[04:08] understanding. Now, in K-nearest
+[04:11] neighbors, the K is the number of
+[04:14] neighbors. How many neighbors do you
+[04:16] want to consider? Like, if you only
+[04:19] want to consider one neighbor, you
+[04:22] replace your missing value with the
+[04:25] feature one value of your closest
+[04:27] neighbor. If you are considering two
+[04:31] values. If the value of K is two. In
+[04:34] KNN, if K is two, you ask two nearest
+[04:36] neighbors what the value should be. For
+[04:39] instance, suppose one nearest neighbor
+[04:41] is here and another is here. So, how
+[04:43] will this missing value be calculated?
+[04:46] 33 + 23/2, if you take three neighbors
+[04:49] and suppose this is the third neighbor,
+[04:52] then how will the value be calculated?
+[04:56] 33 + 23 + 40/3, basically the sum of
+[04:59] the feature values of all neighbors
+[05:03] divided by the total number of
+[05:06] neighbors you have; that is how you do
+[05:10] it. Okay? So, you have to work in two
+[05:12] steps here. In the first step, you have
+[05:16] to find K nearest neighbors. And how
+[05:19] will you find that? You find it by
+[05:21] calculating the distances. By
+[05:23] calculating the Euclidean distance, and
+[05:26] in step two, find the value, basically
+[05:29] take the value from each neighbor and
+[05:32] find their mean. That is how you do it.
+[05:35] It's a two-step process. Now comes the
+[05:37] question, if you have to calculate the
+[05:39] distance between any two rows. How will
+[05:42] you calculate that distance? Now, you
+[05:44] simply know from coordinate geometry
+[05:48] that you use the formula (x2-x1) ² + (
+[05:53] y2-y1) ² if you have a 2D coordinate
+[05:57] system. If it is a 3D coordinate system
+[06:01] , a z-term will be added here. If it is
+[06:04] a 4D coordinate system, one more term
+[06:06] will be added. I hope you are aware of
+[06:09] this. But the problem here is that
+[06:12] there might be missing values in some
+[06:15] rows. For instance, look here, the
+[06:17] value is missing. Two values are
+[06:19] missing here, and two are missing in
+[06:21] this one as well. So, basically, there
+[06:23] is only one row where all three values
+[06:25] remain. Right? So, values can be
+[06:28] missing. That is why a new Euclidean
+[06:31] distance is used here. It is called Nan
+[06:35] Euclidean distance. This is not a
+[06:38] normal Euclidean distance. This is a
+[06:40] Euclidean distance that handles missing
+[06:43] values. And I will share a
+[06:46] documentation with you on this. This is
+[06:49] the official Scikit-learn documentation
+[06:51] for finding Nan Euclidean distance. And
+[06:54] the formula is given here. This is its
+[06:57] formula. It is a slightly revised
+[06:58] formula. I have written the exact same
+[07:00] thing here. I have copied and pasted
+[07:02] the exact same thing from there. So you
+[07:04] can see, if you want to calculate the
+[07:08] distance between two rows, it will be
+[07:11] the square root of the weight
+[07:13] multiplied by the squared distance of
+[07:16] present coordinates. So this part, uh,
+[07:20] (3-1) ² + (6-5) ², is standard, just
+[07:24] as you calculate it. Right? But you
+[07:28] will calculate this part only between
+[07:31] those points where both values are
+[07:34] available. I mean, let me quickly show
+[07:36] you what I am saying. When you
+[07:40] calculate Nan Euclidean distance, what
+[07:43] do you need to do? Suppose you want to
+[07:47] calculate the distance between row
+[07:50] number one and row number two. So how
+[07:52] will you calculate it? Obviously, you
+[07:54] want to fill this value. You want to
+[07:57] fill this value, the first value of the
+[08:00] second row. For that, you will take
+[08:03] this yellow region of row one and row
+[08:06] two. Now, how will the distance be
+[08:08] calculated? The distance will be
+[08:10] calculated like 45 minus this missing
+[08:13] value. So you cannot take this because
+[08:16] there is no value here, so it will be
+[08:19] ignored. Right? Then comes the (68-67)
+[08:22] squared. (67-68) squared plus here
+[08:27] comes 21. -12 squared. Right? I am
+[08:36] simply saying that wherever you do not
+[08:38] find a value in either row, ignore it.
+[08:42] Wherever you find both values, only
+[08:43] consider those values. Right? Now, it
+[08:46] is stated that after this, a weight is
+[08:49] applied outside. A weight is being
+[08:53] mentioned. And what is this weight? It
+[08:55] is written here: where weight is the
+[08:57] total number of coordinates divided by
+[09:00] the number of present coordinates. So,
+[09:02] how many total coordinates are there?
+[09:04] One, two, three. So, what will be the
+[09:07] weight? Three. Divided by how many are
+[09:09] present? This pair is present. This
+[09:12] pair is present. This pair is not
+[09:14] present. So, it will be 3/2. I hope you
+[09:18] are understanding this. Okay? Let me
+[09:20] calculate one more example for you.
+[09:23] Quickly. It has become quite messy here
+[09:26] . So, I will just rub it. Yeah. Now,
+[09:30] let me do one thing. I will show you
+[09:31] how to find it. The distance between
+[09:34] row number two and row number three. So
+[09:36] first, what will come inside the square
+[09:38] root? First, what will come inside the
+[09:41] square root. The square of the
+[09:45] difference between these two: (51-45)
+[09:49] squared plus this is also not missing,
+[09:54] so (68-71) squared plus (12-18) squared
+[09:58] . Right? Now the weight will come. Here
+[10:02] , you will multiply this entire thing
+[10:03] by the weight. What will be the weight?
+[10:05] The weight will be how many total
+[10:07] present coordinates are there: three,
+[10:08] and how many total coordinates are
+[10:10] there? Three. And how many are present?
+[10:12] Three. So, it won't be multiplied by
+[10:14] anything here. This means when
+[10:15] everything is normal, it becomes a
+[10:17] normal Euclidean distance. Okay? Now
+[10:19] let me quickly show you another one.
+[10:22] This time I will show you for row
+[10:24] number one and row number four. What
+[10:27] will it be? Okay? Just once again. I
+[10:29] will quickly rub it off. Yeah. I need
+[10:33] row number two and row number four. We
+[10:38] need to calculate this value. So what
+[10:41] will you do? You will write square root
+[10:44] of weight multiplied by, uh, this is
+[10:49] not even there. This thing is not there
+[10:52] . You will not consider this. You will
+[10:54] consider this one. 81-68 squared and
+[10:58] this thing is also not there. So you
+[11:03] cannot calculate this either. Now what
+[11:05] will be your weight? The weight will be
+[11:07] , what is the total? Three. How many
+[11:09] are present? One. So in this case, you
+[11:11] will multiply by three. w will be equal
+[11:13] to three. Okay? That is how you
+[11:16] calculate NaN Euclidean distance.
+[11:18] It’s just that the weight part is a
+[11:20] bit different. Otherwise, everything is
+[11:22] the same. So I hope you understood this
+[11:25] . Now what have I done? I have already
+[11:28] calculated the distance of point number
+[11:33] two with all the points. And suppose
+[11:38] our K value in KNN is two. Then we will
+[11:41] consider two nearest neighbors to
+[11:44] calculate this value. So, you would see
+[11:47] , let me quickly show you, look at this
+[11:50] . This is the distance from one, this
+[11:53] one here, is the distance from one. Uh,
+[11:57] what I will do is, too much, yeah, this
+[12:02] is fine, and let's just delete this.
+[12:07] Let's bring this down a bit so we can
+[12:10] clearly see while scrolling, and yeah.
+[12:16] Let's see this. Hmm, so this one here,
+[12:21] this is the distance between one and
+[12:24] two. So you can see, out of three, only
+[12:27] two are present, so the weight becomes
+[12:30] 3/2 and inside we got 68. 67, 12, 22,
+[12:36] these two and these two. And after
+[12:41] calculating all this, I got 11.29,
+[12:43] meaning the distance between point
+[12:45] number two and point number one is
+[12:48] 11.29, okay? Now I calculated between
+[12:51] two and three. Everything is available
+[12:54] here. So the weight became 3/3 and the
+[12:57] rest we calculated normally, and it
+[12:59] came to nine. Okay? Then we calculated
+[13:02] with point number four, meaning with
+[13:04] this point. So only one is available
+[13:07] here. Two are missing. So the weight
+[13:10] became 3/1, and 81-68 calculated to
+[13:12] 5.19, and then we calculated with this
+[13:15] last one. So one is missing here too,
+[13:18] so the weight became 3/2, and the rest
+[13:21] is calculated here: 60-45 and 79-68,
+[13:24] and the answer here is 14.79. So if you
+[13:28] are asked which are your two closest
+[13:30] neighbors? For row number two. Then the
+[13:33] answer is, uh, this one. The closest
+[13:35] one is this person, row number four.
+[13:38] This is the closest neighbor one. And
+[13:41] the distance, this one here, is the
+[13:43] closest neighbor two. Now I need to
+[13:46] fill this value. So how will it be
+[13:48] filled? We will add both these numbers
+[13:50] and divide by two. So this is 63/2, so
+[13:53] this value will be 31.5. Okay? If I
+[13:59] considered three neighbors, then this
+[14:01] would be the third neighbor, so I would
+[14:04] add 33 more. It would become 96 divided
+[14:07] by three. Okay? I hope you understood
+[14:09] this entire step. Okay? So that's it.
+[14:12] Now, if I quickly discuss with you what
+[14:15] are the advantages and disadvantages?
+[14:18] So first, this is more accurate.
+[14:22] Meaning this technique is more accurate
+[14:25] . Meaning generally it will give you
+[14:28] better results. Okay? Second, the
+[14:31] problem is more number of calculations.
+[14:36] I mean, you're thinking, right? What do
+[14:38] you have to do? You have to calculate
+[14:40] the distance of a given point with
+[14:43] every other point. You have to sort it.
+[14:46] And then we have to calculate the mean
+[14:48] values. This process is a bit
+[14:50] time-consuming. Especially on a large
+[14:52] dataset. It will take a lot of time.
+[14:56] And the third problem is that when you
+[14:58] deploy this on a server, when you
+[15:01] deploy it in production, you have to
+[15:03] put your entire training set on the
+[15:06] server. Because what you do is, for a
+[15:10] new incoming point, let's say a user
+[15:13] entered a point and it has a missing
+[15:15] value, you use the entire X_train data
+[15:18] to calculate it. So this is also a huge
+[15:22] flaw that slows down the speed and
+[15:24] increases your memory usage on the
+[15:26] server because you are storing the
+[15:28] entire training set. So these are two
+[15:32] major problems. But the advantage is
+[15:34] that it is more accurate. So if you are
+[15:36] working with smaller datasets or
+[15:38] medium-sized datasets, this is a good
+[15:40] technique to use. Every time I have
+[15:42] used it so far, most of the time it has
+[15:45] given me better results than mean and
+[15:47] median. Okay? Now, what I will do is:
+[15:50] Show you the code quickly. So that you
+[15:55] can get a better idea. Okay? So I have
+[15:58] already written this code. So I have
+[16:01] taken all the imports here. We are
+[16:03] working on the Titanic dataset again.
+[16:05] Because by now, we have a good idea of
+[16:07] the Titanic dataset. And I have taken
+[16:10] four columns. Age, Pclass, Fare,
+[16:13] Survived. Okay? Uh, here is my dataset.
+[16:16] Obviously, this is a subset of my data.
+[16:19] And you must have already remembered
+[16:21] that only Age has missing values. There
+[16:23] are no missing values in any of the
+[16:25] others. Okay? I have separated my X and
+[16:28] y and performed the train-test split. I
+[16:32] hope you have no issues up to this
+[16:34] point. Uh, after that, you extracted
+[16:36] X_train.head. So here are your input
+[16:38] columns. Now what do I need to do? I
+[16:40] need to fill my values here. Okay? So
+[16:43] guys, here is your documentation for
+[16:47] KNN Imputer. There aren't many things
+[16:50] in it. Here, you just have to specify
+[16:52] what your missing values are. By
+[16:54] default, the NaN values are your
+[16:56] missing values. So you don't need to
+[16:58] tamper with anything here. You have to
+[17:00] specify n_neighbors. Uh, in this, you
+[17:02] will have to experiment to see which
+[17:04] number gives you the best results. I
+[17:06] will show you how to do it right now.
+[17:07] Next is weights. Uniform or distance. I
+[17:11] will explain this to you after a while.
+[17:13] After that is metric. Metric is
+[17:15] non-Euclidean by default and that is it
+[17:18] . This is non-Euclidean. So there is no
+[17:21] need to make any changes here either.
+[17:23] And after that, the last one is add
+[17:25] indicator. I told you in the last video
+[17:28] that for any column that has missing
+[17:30] values, you create a corresponding
+[17:32] column of true-false. If the value is
+[17:35] missing in that particular row, it
+[17:37] would be true. Otherwise, it would be
+[17:39] false. So this add indicator sometimes
+[17:41] gives good results. I already explained
+[17:43] this to you in the last video. Okay? So
+[17:47] let's do this. Let's apply KNN here. So
+[17:52] I have already imported it above. I
+[17:55] created an object for it named KNN and
+[17:57] passed x_train using KNN.fit_transform,
+[18:00] and put the transformation it performed
+[18:03] into a new variable. I did not make
+[18:05] changes in the same variable. Same with
+[18:07] x_test. Okay? And I converted it into a
+[18:10] dataframe. So you can see here that the
+[18:14] missing values at the end have been
+[18:16] imputed through KNN. Okay? Now what did
+[18:21] I do? I called logistic regression.
+[18:24] Fitted the data on the new data and
+[18:28] made predictions. So the accuracy that
+[18:31] I am getting is somewhere close to 70%.
+[18:34] Okay? Now what can you do here? You can
+[18:37] do a little experimentation. Like one
+[18:39] thing could be how many neighbors you
+[18:42] keep. Here in the documentation, you
+[18:44] can see there is a parameter called
+[18:46] n_neighbors. If it was five here, I
+[18:50] will try with four. Technically, you
+[18:52] should have run a loop. But I did not
+[18:55] run it. So there aren't many changes in
+[18:57] four either. Trying with three. No
+[19:00] change in three either. There are only
+[19:04] very minute changes in two as well. It
+[19:06] decreased in one. Let's try ten. It is
+[19:10] not improving much in ten either. So I
+[19:12] guess five is the ideal value here. In
+[19:13] fact, just make it three. Fewer
+[19:15] calculations will have to be done. But
+[19:17] whatever it is, if you change this
+[19:19] value, you get different results. Okay?
+[19:22] One second, the value you can change is
+[19:25] weights. Weights uniform or distance.
+[19:28] The default remains uniform. If you
+[19:31] want, you can try changing it to
+[19:33] distance. So what can you do? Over here
+[19:36] , you can use a, what was the name, I
+[19:40] forgot. Weights. So, I am typing
+[19:44] weights distance here. And you can see
+[19:49] that using distance has increased your
+[19:51] accuracy a bit. Right? Now, let me
+[19:54] explain what this distance does. So,
+[19:56] for this, what will I have to do? I
+[19:57] will have to go back to this page. Now
+[20:01] look, what is the concept of uniform
+[20:03] and distance? Suppose, uh, suppose you
+[20:07] have these different columns. You want
+[20:12] to fill this value. Right? And you
+[20:15] found out that you are using k equals
+[20:18] two in kNN. So you found out that this
+[20:21] row and this row are your nearest. I
+[20:24] mean, let me write here 1, 2, 3, 4, you
+[20:28] were finding nearest neighbors for
+[20:31] three. So your nearest neighbors were
+[20:34] one and four. Right? Now, suppose the
+[20:37] distance of one is 10 and the distance
+[20:40] of three is, uh, 50. That much distance
+[20:43] was calculated. Just like the distances
+[20:44] we calculated here, all these distances
+[20:46] like 5.19 and all. Suppose the distance
+[20:49] from three to one was 10, and from
+[20:51] three to four was 50, meaning one is
+[20:54] much closer. Four is a bit further away
+[20:56] . Right? And the value at one is 70 and
+[21:01] the value at four is 50. So, generally,
+[21:06] how would you calculate? You would
+[21:08] write (70 + 50)/2, this is uniform
+[21:12] weight. But if you want to calculate
+[21:15] distance-based weights, what will you
+[21:17] do? You will multiply by the reciprocal
+[21:19] of the distance. (1/10*70 + 1/50*50)/2,
+[21:25] so basically, what did you do? You
+[21:32] multiplied each point's value by one
+[21:36] divided by its distance. Right? So this
+[21:40] will become 7, plus this will be 1, so
+[21:44] the answer will be 4, so this value
+[21:47] will be 4. Right? Whereas what would
+[21:50] the value be here? Uh, here the value
+[21:53] would be 120/...I don't know, I messed
+[21:56] something up, it's coming to 60. Uh,
+[22:00] fine, we just computed those values
+[22:02] randomly, but regardless, that is how
+[22:05] you calculate your distance-based
+[22:10] weights. Right? You multiply that value
+[22:13] by one over the distance. Right? And
+[22:15] what is the benefit of this? That the
+[22:17] one which is closer gets more weightage
+[22:20] compared to the one that is further
+[22:23] away. I mean, look here, who was closer
+[22:27] to three? One. When you take the mean,
+[22:30] you give equal weightage to everyone.
+[22:31] You give equal weightage to its value.
+[22:33] You are giving 70 a value of 70. You
+[22:35] are giving 50 a value of 50. But now
+[22:37] you are taking 110 for 70, but taking
+[22:40] 150/3 for 50. Since the distance is
+[22:43] greater, you are saying that the
+[22:45] neighbor closer to me is more similar
+[22:47] to me; so give it more value, trust it
+[22:49] more, and give less value to the
+[22:50] neighbor that is further away. So by
+[22:53] applying this logic, you sometimes get
+[22:55] better results. Like in this case, when
+[22:58] we applied distance, you are getting
+[23:00] better results. Okay? So try this out.
+[23:03] I mean, it's up to you. You have to try
+[23:05] , in machine learning everything is an
+[23:06] experiment. You will have to do this.
+[23:09] Okay? And just one more thing I've done
+[23:11] to show you in this notebook. That is,
+[23:14] what if I had done mean imputation
+[23:16] using the simple imputer class, how
+[23:17] would the result have turned out? So
+[23:20] here I performed this experiment and
+[23:22] you can see it's coming to 69. So
+[23:25] clearly, it is outperforming your mean
+[23:28] and median imputation. Now what should
+[23:31] you do? First of all, you should find
+[23:35] the best values for this KNN imputer
+[23:38] and secondly, compare it with all the
+[23:41] different imputation techniques you
+[23:43] studied earlier. Most likely, you would
+[23:47] see that KNN will outperform all of
+[23:49] them. Because this is a much better
+[23:52] imputation technique compared to others
+[23:55] . There are just two disadvantages.
+[23:57] First, your process will become slow
+[24:00] because you are doing a lot of
+[24:02] calculations and second, you will have
+[24:04] to put your entire training set into
+[24:07] production at the time of deployment,
+[24:09] which is a memory-heavy task. Okay? So
+[24:12] that’s it, it was a very nice and
+[24:14] interesting thing and that's all I
+[24:16] wanted to tell you. I hope you
+[24:19] understood. If so, thanks, you
+[24:21] understood it. Uh, so now I will close
+[24:24] the video.

@@ -1,0 +1,694 @@
+[00:00] Hi guys, welcome to my YouTube channel.
+[00:03] We're studying missing data imputation.
+[00:06] In the last video, we covered complete
+[00:08] case analysis. Where we learned that if
+[00:11] you have missing data in any column,
+[00:14] you can delete that entire row if you
+[00:17] want. Okay? Now, starting today, in the
+[00:20] next three or four videos, we're going
+[00:22] to focus on how to fill in missing
+[00:24] values. Okay? Today's video will be
+[00:28] totally dedicated to numerical data.
+[00:31] Okay? Then, in a separate video, I'll
+[00:34] explain how to impute categorical data.
+[00:36] Okay? So let's start the video. So guys
+[00:38] , if you're talking about numerical
+[00:41] data, there are two ways you can use to
+[00:44] impute missing values. One is
+[00:48] univariate imputation. Okay? And the
+[00:56] second one is multivariate imputation.
+[01:01] Okay? What's the difference between the
+[01:03] two? If you have multiple columns. Okay
+[01:07] ? Let's say 1, 2, 3, 4. Okay? And here,
+[01:12] in a particular row, column number two
+[01:15] has a missing value. Now, if you use
+[01:18] the remaining values in the same column
+[01:21] to fill this value in, that's
+[01:24] univariate imputation. So, you can find
+[01:27] the mean, the median, and randomly
+[01:30] select one of these values. Basically,
+[01:33] if you're applying any statistical
+[01:35] technique to the same column, then
+[01:37] you're doing univariate imputation.
+[01:40] Where, if I extend the same example,
+[01:43] let's say we have four columns. And
+[01:47] again, in a particular row, we have a
+[01:50] single missing value. And to fill this
+[01:53] in, if you use three, four, and one,
+[01:56] you're using the values of all three.
+[01:59] Then this is multivariate imputation.
+[02:03] Okay? Here, we'll study two techniques
+[02:05] in multivariate imputation. We'll study
+[02:07] the KNN imputor and iterative
+[02:11] imputation. We're studying these two in
+[02:13] separate videos. So, in today's video,
+[02:17] we're focusing on univariate imputation
+[02:21] and applying it to numerical data. Okay
+[02:25] ? This is also applicable to univariate
+[02:27] and multivariate categorical data. But
+[02:30] what we're going to study today is
+[02:31] going to be all about numerical data.
+[02:34] Okay? Now we'll look at four different
+[02:37] cases. We'll learn to fill in values in
+[02:40] four different ways. First, we'll learn
+[02:43] to fill in the mean and median values.
+[02:47] This is the simplest technique. Second,
+[02:49] we'll learn to fill in any arbitrary
+[02:53] value. 100, 99, 999-1. Okay? Third,
+[03:01] we'll learn how to use the end of the
+[03:04] distribution to fill in missing values.
+[03:09] I'm not going into that right now. And
+[03:11] lastly, fill in a value randomly. Okay?
+[03:14] And finally, I'll also teach you how to
+[03:17] automatically select the best technique
+[03:20] from these four using SciKitLearn. Okay
+[03:22] ? So that's the agenda for this video.
+[03:25] And there's a chance the video will get
+[03:26] a little long. So you'll have to be a
+[03:28] bit patient. Only then will you
+[03:29] understand. Okay? So let's start with
+[03:32] mean and median imputation. So, let me
+[03:35] give you a small example. There's a
+[03:38] numerical column with values like this,
+[03:41] and then there are missing values.
+[03:43] Something like this. Okay? So, what can
+[03:46] you do in such a scenario? You can do
+[03:50] mean or median imputation. This means
+[03:55] that wherever you have a missing value,
+[03:58] you can replace it with the mean or
+[04:01] median of the entire distribution. You
+[04:05] can use either of them. Now, many
+[04:07] people ask, when should you use the
+[04:09] mean? When should you use the median?
+[04:11] It's a very simple matter. If your
+[04:13] distribution is fairly normal, normally
+[04:17] distributed, then it's very simple. You
+[04:21] can simply use the mean. Actually, the
+[04:23] mean, median, and mode will behave
+[04:25] similarly. If your distribution is even
+[04:28] slightly skewed, like this, then your
+[04:31] mean shifts slightly. So, the median is
+[04:34] a better candidate. Okay? So, I hope
+[04:37] you're getting the point. Now, what's
+[04:40] the advantage of mean and median
+[04:41] imputation? What is the benefit? The
+[04:45] first benefit is that this imputation
+[04:48] technique is very simple. Simply
+[04:51] calculate the mean or median and
+[04:53] replace all missing values. This is
+[04:56] very easy to implement. Okay? Second,
+[04:59] it's easy. When you deploy your machine
+[05:03] learning model to a website, it's very
+[05:06] easy to recreate or reuse it there as
+[05:08] well. So, simplicity is great. Second,
+[05:12] there's actually no special benefit to
+[05:15] it. Like, it's just simple, there's no
+[05:18] reason. Meaning, it will give you good
+[05:21] results if you have few missing values.
+[05:23] If you have a lot of missing values,
+[05:25] let's say, if you have more than 5%
+[05:27] missing values, it's not as reliable.
+[05:30] So, you can do this sometimes in a
+[05:32] hurry. But mostly, you won't use it. At
+[05:36] least, you won't use it in production.
+[05:38] Okay? What are its disadvantages? Its
+[05:43] biggest disadvantage is that it changes
+[05:48] the shape of your distribution. Meaning
+[05:52] , when there were missing values, the
+[05:54] distribution looked like this, and when
+[05:56] you replaced them with the mean, the
+[05:58] shape of the distribution became like
+[06:00] this. So, it changes the distribution.
+[06:02] Okay? And this is obvious. If you
+[06:04] replace everything with the mean, the
+[06:06] shape of your distribution will
+[06:07] obviously change. Second, outliers
+[06:10] appear here. I'll demonstrate this to
+[06:13] you practically. Some extra outliers
+[06:15] appear that aren't actually outliers.
+[06:17] Your system starts considering them
+[06:20] outliers. Okay? Third, the relationship
+[06:24] of your age column with the other
+[06:28] columns also undergoes slight changes.
+[06:32] This is called covariance or changes in
+[06:38] correlation, and all three of these
+[06:41] things are not very good. If you're
+[06:44] talking about machine learning, your
+[06:45] distribution shouldn't change much.
+[06:47] Outliers shouldn't appear without
+[06:49] reason. And the variable whose values
+[06:51] you're entering shouldn't change its
+[06:54] relationship with the others when
+[06:57] you're entering them. These three
+[06:59] things are problematic. So, you have to
+[07:01] be careful. Meaning, sometimes it might
+[07:04] work, but mostly it's risky. Okay? Now,
+[07:06] when should you use it? When to use it
+[07:10] in two cases. First, you should use it
+[07:14] when the data is missing completely at
+[07:18] random. Second, if the data is missing
+[07:22] less than 5%, you should apply it. But
+[07:27] you'll see a lot of people using it on
+[07:30] the internet anyway. Okay? Because it's
+[07:33] a very simple technique. But there are
+[07:34] more sophisticated techniques than this
+[07:36] , so you should try everything. I'll
+[07:39] show you in the last section how you
+[07:41] can automatically select the best
+[07:42] simulation technique. So, for now,
+[07:44] let's see how the mean and median are
+[07:47] practically coded. Okay? So that's it,
+[07:50] the whole thing related to mean median.
+[07:52] Now, let's switch to the coding part.
+[07:56] Okay? Here, I'll show you two different
+[07:59] ways of encoding the mean median (or,
+[08:02] sorry, imputation). One is using a
+[08:04] function called "Padas Fill NA." You
+[08:07] can use that. And you can use
+[08:10] SciKitLearn. Now, honestly, you should
+[08:12] use SciKitLearn. But the only problem
+[08:14] with SciKitLearn is that it's a little
+[08:17] more difficult to code. And when you
+[08:20] transform your columns, it turns your
+[08:23] data frame into a Numeric array, which
+[08:25] makes it difficult to see. So, those
+[08:28] are the disadvantages of both. But
+[08:31] apart from that, it's a useful thing to
+[08:33] use with SciKitLearn because you can
+[08:36] put that same thing into a pipeline.
+[08:39] You can apply Grid Search, CV, etc. on
+[08:40] top of it. You can put that same thing
+[08:42] into production. So, in the end, you
+[08:45] should be using SciKitLearn. So, I'm
+[08:46] going to explain both approaches. I'll
+[08:48] also show you how to do it in Pandas.
+[08:50] And I'll also show you how to do it in
+[08:52] SciKitLearn. The rest is up to you to
+[08:54] decide which one you want to do. I'd
+[08:56] suggest using SciKitLearn. Okay? Anyway
+[08:58] , I've imported the libraries and used
+[09:03] a data set, the same one as the Titanic
+[09:05] data set. I've made a few minor changes
+[09:07] to it. I've only kept four columns and
+[09:10] removed everything else. This is kind
+[09:12] of my version of the Titanic. Age, Fair
+[09:15] , and Family. Family is actually the
+[09:18] summation of parent, child, and sibling
+[09:21] spouse. Okay? And the Survived column.
+[09:23] So, these are the four numerical
+[09:24] columns I have. And what I've done
+[09:26] intentionally is that Age already had
+[09:28] missing data. You know, I've randomly
+[09:31] introduced missing data in Fair as well
+[09:34] , around 5%. Okay? I'll show you. So if
+[09:37] I show you this, df dot izl dot mean,
+[09:40] you can see that 19%of your data is
+[09:43] missing in Age. I've manually removed 5
+[09:47] %of the data in Fair. There's no
+[09:50] missing data in Family. There's no
+[09:51] missing data in Surv. So what's my job?
+[09:53] My goal in this video is to impute the
+[09:57] missing values for Age and Fair, to
+[10:00] fill them in using mean-median
+[10:02] imputation. Okay? So let me show you
+[10:05] first. The first thing you always do is
+[10:07] you do a train-test split. This is what
+[10:09] you always do. Here's my shape after
+[10:11] the train-test split. 712 columns, I'm
+[10:14] sorry, 712 rows are coming in X-train
+[10:17] and 179 rows are coming in X-test. Okay
+[10:20] ? I don't know what I said, but
+[10:21] whatever. And now if you look at
+[10:23] X-train, there are so many missing
+[10:25] values. Around 20%in Age and around 5%
+[10:29] in your Fair. Okay? It's evenly divided
+[10:32] into train and test. Now what did I do?
+[10:34] I took the mean of the age, the median
+[10:37] of the age, the mean of the fair, and
+[10:39] the median of the fair. Because these
+[10:42] are the values I need to fill, I stored
+[10:44] them in these four variables. Okay? The
+[10:47] code after that is very simple. I
+[10:49] created four new columns, two for age
+[10:52] and two for fair. So, in the first age
+[10:55] column, I'm replacing the median with
+[10:57] the mean. And in the second, I'm
+[10:59] replacing the age with the mean. And
+[11:02] I'm applying the same thing to fair. So
+[11:05] you can see: x train age fill NA median
+[11:08] age. x train age fill NA mean age. Okay
+[11:12] ? And as soon as I run this, you can
+[11:14] ignore these warnings at this point.
+[11:17] We're actually making changes to a
+[11:19] portion of a data frame. So those
+[11:21] warnings are coming up. It's okay. No
+[11:22] problem. And now I did the ext frame
+[11:25] dot sample. So you can see, here's my
+[11:28] original age column with missing values
+[11:30] . And here's my imputed age column
+[11:33] based on the mean. So, whatever missing
+[11:36] values there are, like look here. And
+[11:38] let's hope they come in. Like, yes,
+[11:41] look, this is the missing value in H.
+[11:43] Here it's imputed with the mean value,
+[11:45] and all the other values will remain
+[11:47] the same. Wherever there are missing
+[11:49] values, just your, sorry, this is, yes,
+[11:52] this is the median. This is replaced
+[11:54] with the median here. Here it's
+[11:56] replaced with the mean. Okay? And I
+[11:59] applied exactly the same thing to fair.
+[12:02] So I used Pandas and I'm done. Okay?
+[12:06] Now what should you do next? Whenever
+[12:09] you do these imputations, you should
+[12:10] look at three or four things. First,
+[12:12] you should look at the variance, what's
+[12:14] the change in the variance? Okay?
+[12:16] Variance means how much deviation you
+[12:18] are making from the mean. Generally,
+[12:20] when you use mean-median imputation,
+[12:23] your variance shrinks. Because your
+[12:26] higher values now move closer to the
+[12:28] mean, so your variance will obviously
+[12:30] decrease. Because what is variance? The
+[12:32] squared sum of the distance from the
+[12:33] mean. Right? So, here you can see that
+[12:36] the age variable in the original data
+[12:39] had a variance of 204, but when I used
+[12:42] age-median imputation, it became 161.98
+[12:45] , and when I used mean imputation, it
+[12:48] became 161.82. So, you should always
+[12:51] remember that whenever you use mean or
+[12:53] median imputation on any distribution,
+[12:55] your variance will shrink on numerical
+[12:58] data. Just be careful not to shrink it
+[13:01] too much. There should be no drastic
+[13:03] changes. If drastic changes are
+[13:05] occurring, that's a red flag. Okay?
+[13:07] Same with fair. Our variance in fair is
+[13:11] 2448, and it hasn't reduced much. The
+[13:14] reason for this is that fair has very
+[13:16] few missing values. So, there hasn't
+[13:18] been much change. In air, there are 20%
+[13:21] missing values in edge. So, there
+[13:23] hasn't been a big change. Okay? So, I'm
+[13:25] repeatedly saying air. I'm sorry. In
+[13:28] the case of edge, you have to be a
+[13:30] little careful; what you've done may
+[13:32] not give you the desired results. Okay?
+[13:35] So, I hope you're getting the point.
+[13:37] The second thing you need to figure out
+[13:38] is how the distribution has changed. So
+[13:40] , I've written this code, and this is
+[13:43] the change in fair and this is the
+[13:45] change in edge. So, in edge, you can
+[13:48] see that the blue curve is my original
+[13:50] edge, which is the original
+[13:52] distribution with missing values. And
+[13:55] this orange and this green curve is my
+[13:58] distribution with median and mean. And
+[14:01] you can see that your distribution has
+[14:03] changed significantly. Meaning, it's
+[14:04] gotten a little larger at the center.
+[14:06] It's elongated. The reason for this is
+[14:07] that your mean and median now have
+[14:07] higher values. So, because of the
+[14:12] higher center values, the probability
+[14:13] there is higher. Okay? So, this is a
+[14:16] bit of a red flag. This kind of drastic
+[14:18] change shouldn't occur. But if I were
+[14:20] to apply the same thing to the fair,
+[14:22] you would see that you only see one
+[14:24] curve, and the reason for this is that
+[14:26] all three curves are overlapping each
+[14:28] other. This means that the previous
+[14:30] distribution and the distribution after
+[14:33] imputation are exactly almost the same,
+[14:35] both in terms of mean and median.
+[14:38] Almost the same, in fact. Okay? I'm
+[14:40] just seeing a slight orange shade here
+[14:44] and there. But apart from that, it's
+[14:46] good. You shouldn't be alarmed by this.
+[14:49] This is fine. If the distribution is
+[14:51] the same, that's a green flag that you
+[14:54] can do this. Okay? And lastly, you
+[14:56] should check the covariance. That means
+[15:02] , has your column's interaction with
+[15:04] the other columns changed? For example,
+[15:08] if you look at the interaction of age
+[15:10] with fair, it was 70. The covariance
+[15:13] was 70. With family, it was -6.49. Okay
+[15:16] ? Meanwhile, if you look at age mean,
+[15:19] it's now 55. So its interaction with
+[15:22] fair has reduced. Okay? And there have
+[15:25] been some changes with family as well.
+[15:27] And the same goes for age mean. There
+[15:31] have been changes here as well. So
+[15:33] again, changes aren't good. Okay? Too
+[15:36] many changes are not good. And you can
+[15:38] also try the same thing on correlations
+[15:39] . You'll see small changes in all the
+[15:42] correlations because the core
+[15:44] correlation ranges between -1 and 1.
+[15:46] There's no such limit in covariance.
+[15:48] Okay? So, and finally, you should run a
+[15:52] boxplot. For example, when I ran the
+[15:55] boxplot here on the edge, edge, median,
+[15:58] and edge mean, you can see that my
+[16:00] original data had very few outliers.
+[16:03] But as soon as I ran the edge median,
+[16:05] meaning I subtracted the missing values
+[16:08] from the median, my IQR (inter)
+[16:10] quartile range shrank, and as a result,
+[16:12] I got outliers on both sides, which
+[16:15] normally wouldn't be considered
+[16:17] outliers. So again, this is also not
+[16:19] good, and this same behavior is
+[16:20] observed for both the mean and median.
+[16:22] So, this is also a red flag. Okay? And
+[16:24] if you talk about fairness, in fairness
+[16:26] , you'd see that there's no change
+[16:28] between before and after. Your IQR is
+[16:31] the same. Your outliers are the same.
+[16:34] So, there's no major change. So, if you
+[16:40] ask me, I would have used mean-median
+[16:42] imputation for fairness because there
+[16:44] were no red flags. I wouldn't have used
+[16:48] it for edge-to-edge imputation because
+[16:49] I'm consistently getting red flags. The
+[16:50] covariance correlation is changing.
+[16:52] Outliers are appearing. The
+[16:53] distribution is changing. All of this
+[16:54] is not good. You'll find a better
+[16:56] imputation technique than this. Okay?
+[16:58] Now, lastly, let me show you one more
+[17:00] thing about how you can use SciKitLearn
+[17:02] . I did the same thing again. I took
+[17:05] the train-test split on the same data.
+[17:08] Now I created two imputations. By the
+[17:10] way, I'm going to use this class called
+[17:11] SimpleComputer. It's a CycleLearn class
+[17:14] , and in it, you only have these values
+[17:16] . Meaning, parameters are missing
+[17:18] values. You can do it on top of none,
+[17:21] or you can replace the zeros. You can
+[17:23] replace any value. Meaning, you can
+[17:25] consider any value as a missing value.
+[17:27] But generally, people use mp dot nan.
+[17:29] That's the default value. You don't
+[17:31] have to do anything more than that.
+[17:32] Then you're asked, "What's the strategy
+[17:34] ?" In the strategy, you have options:
+[17:36] mean, median, and most frequent. You
+[17:38] use most frequent when you have
+[17:40] categorical data. Basically, mode. Okay
+[17:42] ? And lastly, constant, we'll use this
+[17:45] when we use arbitrary data. I'll show
+[17:48] you this in a bit. Don't worry. Fill
+[17:50] value, you use when you have a strategy
+[17:53] constant, which we'll discuss in a bit.
+[17:56] And is there anything else here?
+[18:00] There's something called an add
+[18:01] indicator. I'll tell you about that
+[18:03] separately. But this is what a simple
+[18:05] computer is. So what did I do? I used
+[18:07] two different simple computer variables
+[18:09] . What am I doing now? I just want to
+[18:11] show you that you can impute missing
+[18:14] data using two different strategies in
+[18:17] two different columns of a single data
+[18:21] set. Basically, in simple terms, I'm
+[18:24] applying the median to the age column
+[18:27] and the mean to the fair column. That's
+[18:30] all I was trying to tell you. I made a
+[18:32] very complicated statement. But what I
+[18:34] want to do is show you how to use
+[18:37] different strategies for different
+[18:39] columns in the same data set. So that's
+[18:42] what I've done here. I created an
+[18:43] imputer. Simple computer strategy,
+[18:46] median, simple computer strategy, mean
+[18:48] are two different computers. And then I
+[18:50] created a column transformer. I passed
+[18:52] these two things to the column
+[18:54] transformer. So, I passed age to the
+[18:56] first computer and fair to the second
+[18:58] computer. So this will make sure that
+[19:01] the median is applied to age and your
+[19:04] mean is applied to fair. Okay? It's
+[19:07] random. I mean, I didn't do it
+[19:09] deliberately, just to show it. Okay? So
+[19:11] what did we do? TRF dot fit. What
+[19:14] happened in this step is that it will
+[19:16] train. And here you can see what the
+[19:18] statistics are for computer one? You
+[19:21] can see 28.75. So this is actually the
+[19:23] median value of age. Okay? And
+[19:25] similarly, when I applied the
+[19:27] statistics to the second one, it was
+[19:29] 32.61. This is your mean value of fair.
+[19:33] Okay? Now, you don't have to do
+[19:34] anything in the last step. You just
+[19:36] apply this transform to x-train and
+[19:40] this transform to x-test. And that's it
+[19:44] . Here is your data. Okay? So always
+[19:47] remember one thing. Never forget this.
+[19:50] You will fit on the training data. You
+[19:53] will find the mean and the median of
+[19:56] the training data, but you will also
+[19:59] transform x-test. Okay? What's the mean
+[20:01] value you'll use to transform the
+[20:03] X-test? The training data. Okay? So
+[20:06] always remember this. Some people mess
+[20:07] up here. Okay? Now we're done with the
+[20:10] first strategy. Now we'll move on to
+[20:13] the second one: arbitrary value
+[20:16] imputation. So, in arbitrary value
+[20:19] imputation, what you do is fill in all
+[20:22] the missing values with a single value.
+[20:26] It could be any value. For example, you
+[20:29] mostly use this technique for
+[20:32] categorical variables. What you do
+[20:35] there? You replace all the missing
+[20:38] values with the word "missing." This
+[20:43] way, your machine learning algorithm
+[20:45] and model can understand that there was
+[20:48] missing data and can differentiate
+[20:50] those observations. By those
+[20:53] observations, I mean, I'm sorry, I mean
+[20:55] , your machine learning model should be
+[20:58] able to differentiate between
+[21:00] observations that had data versus
+[21:02] observations that didn't. So that's why
+[21:05] you use this technique in categorical
+[21:07] data. But you can use this same
+[21:09] technique in numerical data as well.
+[21:11] And in the numerical case, what you do
+[21:13] is you use some arbitrary number. So it
+[21:15] could be zero, and it could be -1, and
+[21:18] it could be 99, and 999, something that
+[21:21] isn't in your data. For example, if
+[21:24] you're talking about age, you could put
+[21:27] 99 or you could put -1. Okay? So it's
+[21:29] up to you. The whole idea is, what do
+[21:33] you do? You're trying to create a
+[21:36] distinction between observations that
+[21:39] have data versus observations that
+[21:42] don't. That's the whole idea behind
+[21:44] this technique. Right? The advantage
+[21:48] here is that you can apply it very
+[21:51] easily. Easy to apply. And the
+[21:57] disadvantages, you could say, are the
+[22:00] same as those in your last technique.
+[22:03] First, your graph PDF gets distorted.
+[22:13] Right? Second, your variance also
+[22:16] changes, and third, your covariance and
+[22:19] correlation with other columns also
+[22:22] change. So, the covariance also changes
+[22:26] . Right? But you still do it because
+[22:29] you want to create a difference. Right?
+[22:32] Again, this technique isn't used that
+[22:34] often. Honestly, especially when you're
+[22:35] talking about numerical data, it's not
+[22:37] that useful. But since we're covering
+[22:39] everything, I'm going to explain this
+[22:40] technique as well. Now, I'll quickly
+[22:42] show you what this whole thing looks
+[22:45] like in code. I've written exactly the
+[22:47] same code for the same data set. What
+[22:50] am I doing this time? You can see what
+[22:52] I'm doing this time? I'm creating new
+[22:54] columns. And I'm creating two new
+[22:57] columns. But for the missing column,
+[23:01] I'm creating a column with missing
+[23:04] values. For age, I'm creating a column
+[23:06] called 'age under 99', where I'm
+[23:09] replacing all the missing values with
+[23:11] 99, and a new column called 'age -1'
+[23:13] where I'm replacing all the missing
+[23:16] values for age with -1; and the same
+[23:18] with fair, fair, I'm replacing with 99
+[23:21] and replacing with -1. And after doing
+[23:24] this, if you notice, your variance will
+[23:28] change. You can see the variance was
+[23:31] 204 initially. By changing it to 99, it
+[23:34] became very high, and even by changing
+[23:37] it to -1, it's actually high. Okay? And
+[23:41] the same goes for your fair column:
+[23:44] from 2448 to 47,000, it's a lot. Okay?
+[23:48] But again, there's no problem with that
+[23:49] . This whole technique is used to
+[23:51] create differences. Okay? If you're
+[23:54] talking about distributions, you can
+[23:56] see the distribution here. The blue one
+[23:59] is your normal with missing values, the
+[24:02] orange one is your 99 one, and here you
+[24:06] can see that you've fallen slightly
+[24:09] below the mean, and you have another
+[24:12] kind of peak on the 99 side because
+[24:15] there are a lot of 99 values. Similarly
+[24:18] , in the case of age-1, you have this
+[24:20] peak because you have a lot of negative
+[24:22] one values. Okay? And I've applied the
+[24:25] same thing here to fair. You can take a
+[24:28] look. If you analyze the covariance,
+[24:31] you'll see it. It changes. So, there's
+[24:33] nothing new here. And the same goes
+[24:35] with correlation. Okay? And if you want
+[24:37] to use it in SciKitLearn, it's exactly
+[24:39] the same technique. What do you do here
+[24:42] ? When you're calling the
+[24:44] SimpleComputer class, you make the
+[24:46] strategy constant, and you can give
+[24:48] whatever you want as your fill value.
+[24:51] I've written some code here to fill two
+[24:53] different values in two different
+[24:56] columns. The code is written here. You
+[24:58] can just go through the code. You're
+[25:00] not going to find anything special here
+[25:02] . Okay? So you replace with these
+[25:04] summary arbitrary values. There are two
+[25:08] conditions. I forgot to mention one
+[25:10] important thing. You especially do this
+[25:15] when you think the data is not missing
+[25:21] at random. This is a very important
+[25:24] thing. You replace with the mean and
+[25:27] median when you think the data is
+[25:29] completely missing at random. Here, if
+[25:32] you believe the data isn't missing
+[25:34] randomly, meaning it's missing in
+[25:35] chunks. A little more here and not
+[25:37] random elsewhere, then you use this
+[25:40] technique: you simply indicate that the
+[25:42] data is missing here. Your algorithm
+[25:45] handles the rest. But again, this
+[25:47] technique isn't used as often,
+[25:49] considering there are better techniques
+[25:51] available. Okay? So, if you wanted to
+[25:53] read it, you did. Okay? Now, we're
+[25:55] going to discuss end-of-distribution
+[25:58] imputation next. This imputation
+[26:02] technique is simply an extension of the
+[26:06] previous arbitrary value imputation we
+[26:10] saw. What you do in arbitrary value
+[26:12] imputation is replace the missing
+[26:15] values with any arbitrary number. Now,
+[26:18] what happens is that finding the
+[26:19] arbitrary value is a bit difficult, or
+[26:22] finding the best possible value is a
+[26:24] difficult task. So this is where
+[26:26] end-of-distribution imputation comes in
+[26:29] . What you do here is pick a value from
+[26:34] the end of your distribution, like 99,
+[26:39] 999, and -1. So, there are two cases.
+[26:43] If the column you're imputation on is
+[26:48] normally distributed, you use the value
+[26:54] mean + 3 times sigma to perform the
+[26:59] imputation. Sigma means standard
+[27:02] deviation. Or you can use mean-3 times
+[27:07] sigma. Because you probably know that 6
+[27:11] %of the population is at one standard
+[27:15] deviation. So, 6%is at 6%, then it goes
+[27:19] up to 98%at two standard deviations,
+[27:23] and 97 at three. So, anything on this
+[27:26] side of three is an outlier. So, you
+[27:28] replace all missing values with that
+[27:31] outlier value if your data is normally
+[27:33] distributed. If your data is skewed,
+[27:37] you use the IQR proximity rule. You
+[27:40] call it the IQR proximity rule. Okay?
+[27:45] What do you do with it? The value you
+[27:47] replace is calculated like this: Your
+[27:50] value is q1-1.5 times the IQR if you
+[27:56] have skewed data like this. Okay? Or
+[28:02] you use q3 + 1.5 times the IQR, where
+[28:08] your IQR is q3-q1. Okay? And q3 and q1,
+[28:14] you know, this is basically the 25th
+[28:17] percentile for Q1 and the 75th
+[28:20] percentile for Q3. Okay? So, in short,
+[28:24] if I summarize, end-of-distribution
+[28:27] imputation and arbitrary value
+[28:29] imputation are the same thing. In
+[28:32] arbitrariness, you replace the missing
+[28:34] value with any number. Because the end
+[28:37] goal of both imputations is to indicate
+[28:39] that there's a missing value. Your job
+[28:42] is to surface the missing value. So,
+[28:47] either insert a value that isn't in
+[28:49] your data, or you take the extreme
+[28:51] values that lie at the ends of your
+[28:53] distribution, so that they don't
+[28:55] mismatch the values in the data. So, in
+[28:57] both cases, you're doing the same thing
+[29:00] . You're simply presenting the
+[29:03] missingness, the missingness feature in
+[29:07] the data, to your model. Okay? So,
+[29:10] either you do it using arbitrary, where
+[29:12] you take any random number that isn't
+[29:15] in the data, or you use
+[29:16] end-of-distribution imputation, where
+[29:18] you use techniques to find out that
+[29:20] number. So, I'm not coding this
+[29:22] separately. The same things apply here.
+[29:26] Here too, when you apply it, the
+[29:29] advantage is that it's easy to use.
+[29:32] Calculating these values isn't a big
+[29:34] deal. The disadvantage remains the same
+[29:37] : your PDF will change. Your covariance
+[29:41] will change. Your variance may increase
+[29:45] or decrease. Right? And when should
+[29:48] this be used specifically? When your
+[29:51] data isn't missing at random. If you
+[29:55] understand that your data isn't missing
+[29:58] at random, you'll use it just like an
+[30:01] arbitrary one. Right? So, that's our
+[30:04] third technique. Now let's discuss our
+[30:07] fourth technique: random sample
+[30:10] imputation. In fact, let's do one thing
+[30:12] , guys. These two remaining topics:
+[30:15] random sample imputation and how to
+[30:17] automatically select samples? Best
+[30:20] imputation technique. I'll make a
+[30:21] separate video on these two topics
+[30:23] because I feel this video has already
+[30:25] become too long. Almost 30 minutes,
+[30:27] maybe even more. And the good part is
+[30:29] that random sample simulation is a
+[30:32] special technique. It's applicable to
+[30:35] both categorical data and numerical
+[30:39] data. And it has some really cool stuff
+[30:42] . So we'll discuss this in another
+[30:44] video. And the same with this topic:
+[30:46] automatically selecting the best
+[30:47] computation technique. So let's not
+[30:49] cover these topics in this video. In
+[30:52] this video, just watch and understand
+[30:55] these three techniques carefully: the
+[30:57] mean, median, arbitrary, and
+[30:58] end-of-distribution thing. Okay? So, I
+[31:02] hope you understood the video. It
+[31:07] probably got a little technical. But if
+[31:11] you use the notebook properly, try it
+[31:13] out a bit, then I think you'll get it.
+[31:16] Okay? So that's it for today's video.
+[31:19] Thanks for watching. Bye.
