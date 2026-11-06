@@ -379,7 +379,7 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 
 `Day_22/notes.md` was rewritten in place from the 17,311-byte older guide into a unified two-layer chapter. No notebook, dataset, report artifact, `vendor/`, or `reference_notebooks/` changes were made.
 
-- Current size: **1,784 lines / 70,686 bytes / 10,823 checker words**; Part A **7,418 words**, Part B **3,405 words**.
+- Current size: **1,784 lines / 70,682 bytes / 10,819 checker words**; Part A **7,418 words**, Part B **3,405 words**.
 - Coverage: all four distinct notebooks (ydata-profiling, Sweetviz, empty placeholder, official legacy), the current ydata report, the older root ydata duplicate, and the official pandas-profiling report. The notebooks remain separate.
 - Verified data facts: 891 x 12; 866 missing cells (8.1%); 0 duplicate rows; Sex survival female 233/314 (74.20%) vs male 109/577 (18.89%), OR about 12.35; Pclass survival 62.96% / 47.28% / 24.24%; Age missing by class 30 / 11 / 136; Fare 15 zeros, skew 4.7873; Age skew 0.3891; correlations `Survived`-`Pclass` -0.3385, `Survived`-`Fare` 0.2573, `Pclass`-`Fare` -0.5495.
 - Source-fidelity findings: no Sweetviz HTML artifact exists; both local HTML files are ydata-profiling v4.18.4; the Sweetviz notebook claims generation but the artifact is absent; both local notebooks show kernel crashes after report generation; the saved ydata report predates the notebook timestamp, so the exact run is uncertain; the old notes referenced a nonexistent ydata notebook and the old README referenced a nonexistent reference notebook.
