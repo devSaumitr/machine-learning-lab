@@ -8,9 +8,9 @@
 
 ## Current objective
 
-**Course expansion is paused except for the user-requested Day 41 theory class. The current priority is applying the approved Day 39 two-layer pedagogical standard to every existing `notes.md`: keep the technical depth, teach it in a gradual, explanation-first narrative, and split each chapter into Part A (main learning chapter, sufficient on its own) and Part B (optional advanced reference). There is no mandatory word count. `Day_39/notes.md` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `DAY_31`, and `DAY_32` have been rewritten and validated. `Day_41/notes.md` is a validated theory-only supplement for the user-supplied YouTube outlier class; it is not an official vendor day. Do not create other new day folders, notes, reference copies, or datasets until the existing notes have been rewritten.**
+**Course expansion is paused except for the user-requested Day 41 theory class. The current priority is applying the approved Day 39 two-layer pedagogical standard to every existing `notes.md`: keep the technical depth, teach it in a gradual, explanation-first narrative, and split each chapter into Part A (main learning chapter, sufficient on its own) and Part B (optional advanced reference). There is no mandatory word count. `Day_39/notes.md` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `Day_23`, `DAY_31`, and `DAY_32` have been rewritten and validated. `Day_41/notes.md` is a validated theory-only supplement for the user-supplied YouTube outlier class; it is not an official vendor day. Do not create other new day folders, notes, reference copies, or datasets until the existing notes have been rewritten.**
 
-Next: rewrite the remaining existing notes in sequence, starting with Days 23–30; then Days 33–38 and 40; then Days 42–45 and 47–49; then Days 50–53; then Days 55–56.
+Next: rewrite the remaining existing notes in sequence, starting with Days 24–30; then Days 33–38 and 40; then Days 42–45 and 47–49; then Days 50–53; then Days 55–56.
 
 ### Folder policy (course-wide preparation)
 
@@ -44,7 +44,7 @@ Day_XX/                      # or existing uppercase DAY_XX
 
 ---
 
-## Course-wide coverage table (inventory verified 2026-11-02; Days 16–22, 31, and 32 rewritten 2026-11-04–06)
+## Course-wide coverage table (inventory verified 2026-11-02; Days 16–23, 31, and 32 rewritten 2026-11-04–06)
 
 Status meanings: **NOTES PRESENT** = an older notes file exists but has not been audited against the new depth standard; **NOTES COMPLETE** = deep notes written and checked (math plus source/content spot-checks); **REWRITTEN (DAY 39 STANDARD)** = two-layer Part A/Part B rewrite validated for math, structure, and content; **THEORY NOTES** = validated theory-only supplement with no official notebook or dataset; **TYPESET** = completed and math-validated on 2026-11-02; **SCAFFOLDED** = README/source map/datasets prepared, deep notes pending; **EXTRA** = no official numbered source; **UNNUMBERED** = official module without a course-day number.
 
@@ -96,7 +96,7 @@ Status meanings: **NOTES PRESENT** = an older notes file exists but has not been
 | 65 | `day65-random-forest` | 7 | No | `heart.csv`; digit `train.csv` missing | `Day_65` | SCAFFOLDED | PENDING |
 | 66 | `day66-adaboost` | 2 | No | Synthetic; hard-coded demo | `Day_66` | SCAFFOLDED | PENDING |
 | 68 | `day68-stacking-and-blending` | 1 | No | `heart.csv` | `Day_68` | SCAFFOLDED | PENDING |
-| Extra | No official Day 23 folder | 0 | No | None | `Day_23` | NOTES PRESENT (EXTRA) | UNVERIFIED |
+| Extra | No official Day 23 folder | 0 | No | None | `Day_23` | **REWRITTEN (DAY 39 STANDARD; EXTRA)** | PASS (MATH; STRUCTURE; CONTENT) |
 | Extra | `gradient-boosting` (unnumbered) | 1 | No | Synthetic | `EXTRA_gradient_boosting` | SCAFFOLDED | PENDING |
 | Extra | `kmeans` (unnumbered) | 1 | No | `student_clustering.csv` | `EXTRA_kmeans` | SCAFFOLDED | PENDING |
 
@@ -434,7 +434,7 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 ## Remaining (next unfinished first)
 
 1. **Verification pass** — confirm every restored notebook opens, matches its source (or documented improvement), and that README inventory matches disk.
-2. **Pedagogical rewrite of existing notes** — `Day_39` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `DAY_31`, and `DAY_32` are rewritten and validated. `Day_41` is a validated theory-only supplement. Next rewrite Days 23–30, then Days 33–38/40, 42–45/47–49, 50–53, and 55–56 using the two-layer, explanation-first standard. Course expansion remains paused except for explicit user requests.
+2. **Pedagogical rewrite of existing notes** — `Day_39` is the approved standard; `Day_16`, `Day_17`, `Day_18`, `Day_19`, `Day_20`, `Day_21`, `Day_22`, `Day_23`, `DAY_31`, and `DAY_32` are rewritten and validated. `Day_41` is a validated theory-only supplement. Next rewrite Days 24–30, then Days 33–38/40, 42–45/47–49, 50–53, and 55–56 using the two-layer, explanation-first standard. Course expansion remains paused except for explicit user requests.
 3. **Notebook polish** — meaningful headings + short what/why + useful code comments, preserving implementations. Day 32 has local typos and duplicated draft markdown to address later; do not rewrite the working code.
 4. **Future day notes** — after the existing-note rewrite is complete, resume Day 37+ only under the approved standard; inspect each personal notebook against its official source before editing.
 5. **Persist the master-notes standard** — the approved pedagogical pilot and Day 31/32 depth exemplars become the writing standard; add it to `AGENT_STYLE/` once the user approves it (the verbatim prompt is not stored in the repo).
@@ -443,7 +443,7 @@ Converted every mathematical expression in `DAY_31/notes.md` to Markdown-compati
 
 ## Exact next action
 
-> Rewrite Days 23–30 next using the approved Day 39 two-layer standard: Part A must be sufficient on its own, Part B optional; preserve all technical depth, formulas, notebook results, source-fidelity notes, and interview/exam coverage; rewrite in place; validate fences, tables, Mermaid, and KaTeX; update each README and this progress file. Do not resume course expansion except for explicit user requests.
+> Rewrite Days 24–30 next using the approved Day 39 two-layer standard: Part A must be sufficient on its own, Part B optional; preserve all technical depth, formulas, notebook results, source-fidelity notes, and interview/exam coverage; rewrite in place; validate fences, tables, Mermaid, and KaTeX; update each README and this progress file. Do not resume course expansion except for explicit user requests.
 
 ---
 
